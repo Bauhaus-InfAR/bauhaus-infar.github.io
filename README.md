@@ -1,2 +1,2 @@
 # bauhaus-infar.github.io
-ImfAR website
+InfAR website
