@@ -4,16 +4,27 @@ project:
   resources: static/.
 
 website:
-  title: "InfAR-Bauhuaus"
+  title: "InfAR"
   navbar:
+    background: primary
     left:
       - href: index.qmd
         text: Home
       - about.qmd
+    right: 
+      - icon: github
+        href: https://github.com/Bauhaus-InfAR
+  page-footer: 
+    center: "&copy; 2023 Milan Valášek"
+    background: light
+  repo-url: https://github.com/Bauhaus-InfAR/bauhaus-infar.github.io
+  repo-actions: [edit, issue]
 
 format:
   html:
-    theme: cosmo
+    theme:
+      light: flatly
+      dark: [flatly, theme-dark.scss]
     css: styles.css
     toc: true
 
