@@ -21,9 +21,9 @@ library(patchwork)
 ```
 
 ```{r data}
-ids <- read.csv("../data/apartment_simulations.csv") |>
+ids <- read.csv("../../static/data/apartment_simulations.csv") |>
   mutate(bfa = paste(building_id, floor_id, apartment_id, sep = "_"))
-clusters <- read.csv2("../data/all_flats_clustered.csv", sep = ",")
+clusters <- read.csv2("../../static/data/all_flats_clustered.csv", sep = ",")
 ```
 
 
@@ -85,7 +85,7 @@ After the initial aligning of the floor plans along the x and y axes, there rema
 #| fig-height: 5
 #| fig-width: 5
 
-img <- magick::image_read(paste0("../img/example_floorplan.png"))
+img <- magick::image_read(paste0("img/example_floorplan.png"))
 
 mar_orig <- par()$mar
 par(mfrow = c(3, 3), mar = rep(0, 4))
