@@ -1,0 +1,6 @@
+---
+title: Datasets
+listing:
+    contents: ../static/data/*
+    type: table
+---
