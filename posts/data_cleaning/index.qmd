@@ -3,6 +3,9 @@ title: "Data cleaning"
 author: Milan
 date: "2/13/2023"
 date-modified: "`r Sys.Date()`"
+date-format: "D MMM YYYY"
+categories: [Neufert 4.0, documentation]
+image: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/cleaning-experts-essentials-buys-1657632352.jpg?crop=1.00xw:0.752xh;0,0.0457xh&resize=980:*"
 ---
 
 
@@ -29,7 +32,7 @@ clusters <- read.csv2("../../static/data/all_flats_clustered.csv", sep = ",")
 
 ## Descriptives
 
-The Neufert 4.0 dataset comprised data from a total of _N_ = `r nrow(ids)` apartments.
+The Neufert 4.0 dataset comprises data from a total of _N_ = `r nrow(ids)` apartments.
 
 ```{r}
 raw_data <- ids
@@ -70,13 +73,13 @@ First, to account for potential rotation of the apartments, we oriented them alo
 
 Next, we converted the vector graphics representation of the apartments to 224&times;224 black and white raster representation that contained only area geometries (rooms, corridors, shafts, balconies _etc._ but not walls, columns, doors, or windows). Each such 224&times;224 matrix contained only values of 0 (black) and 1 (white).
 
-These matrices were then used to compare to get a measure of distance between the apartment geometries. The apartments were first grouped according to number of rooms. Within each group, we then selected a random apartment as a reference matrix ($\mathbf{A}$) and calculated the sum of squared difference between this reference and all other apartnent matrices ($\mathbf{B}$):
+These matrices were then used to compare to get a measure of distance between the apartment geometries. The apartments were first grouped according to number of rooms. Within each group, we then selected a random apartment as a reference matrix ($\mathbf{A}$) and calculated the sum of squared difference between this reference and all other apartment matrices ($\mathbf{B}$):
 
 $$SS = \sum_{i = 1}^{n}\sum_{j = 1}^{n}(\mathbf{B}_{ij} - \mathbf{A}_{ij})^2$$
 
 where $n$ = 224, the number of pixels per dimension.
 
-After the initial aligning of the floor plans along the x and y axes, there remained eight possible orientations each floor plan could have (see @fig-orient). For this reason, each floor plan matrix was transformed into eight different matrices that reflected these rotattions and only then compared to the reference using the sum of squares measure. This resulted in eight distance values per floor plan, yielding an eight-dimensional difference space, with each floorplan representing a point in this space and the reference flat positioned at its origin.
+After the initial aligning of the floor plans along the x and y axes, there remained eight possible orientations each floor plan could have (see @fig-orient). For this reason, each floor plan matrix was transformed into eight different matrices that reflected these rotations and only then compared to the reference using the sum of squares measure. This resulted in eight distance values per floor plan, yielding an eight-dimensional difference space, with each floor plan representing a point in this space and the reference flat positioned at its origin.
 
 
 ```{r}
@@ -100,11 +103,11 @@ par(mfrow = c(1, 1), mar = mar_orig)
 
 In order to further expand this difference space, we selected another floor plan as reference and repeated this process. This floor plan was chosen from the middle of the distance distributions in the first iteration. Thee resulting 16-dimensional data set was then passed to the Self-Organising Map algorithm (SOM, Kohonen...) with a grid size equal to $floor(\sqrt{n})$, where $n$ represents the number of floor plans with a given number of rooms. This procedure yielded grid position for each of the analysed floor plans, clustering them according to shape.
 
-The above-described algorithm produced a somewhat liberal clusters, occasionally grouping dissimilar floor plans into a single cluster and so a further step was implemented to refine the clustering. Within each of the SOM clusters, we started by designating the first (position was arbitrary) floor plan as the reference and once again calculated the distance between it and the eight orientations of all other floor plans in the same SOM cluster. If the smallest of the eight distance measures was less than an empirically determined threshold of 2,000, the floorplan in question was added to a cluster defined by the reference floor plan. Next, the first of the remaining floor plans that did not pass the threshold was designated a reference for the next cluster and the process repeated. Once all floor plans withing the same SOM cluster were assorted, the algorithm was reiterated on the next SOM cluster.
+The above-described algorithm produced a somewhat liberal clusters, occasionally grouping dissimilar floor plans into a single cluster and so a further step was implemented to refine the clustering. Within each of the SOM clusters, we started by designating the first (position was arbitrary) floor plan as the reference and once again calculated the distance between it and the eight orientations of all other floor plans in the same SOM cluster. If the smallest of the eight distance measures was less than an empirically determined threshold of 2,000, the floor plan in question was added to a cluster defined by the reference floor plan. Next, the first of the remaining floor plans that did not pass the threshold was designated a reference for the next cluster and the process repeated. Once all floor plans within the same SOM cluster were assorted, the algorithm was reiterated on the next SOM cluster.
 
 While the "refinement" algorithm could have been applied to the raw, unclustered data, the benefit of first creating the SOM clusters was a massive reduction of apartment-to-apartment comparisons and thus of computational resources.
 
-This procedure yieded `r max(clusters$cluster)` rotation- and translation-invariant clusters of geometrically identical floor plans. The number of floor plans per cluster ranged from `r table(clusters$cluster) |> range() |> paste(collapse = " to ")` (see @fig-clust).
+This procedure yielded `r max(clusters$cluster)` rotation- and translation-invariant clusters of geometrically identical floor plans. The number of floor plans per cluster ranged from `r table(clusters$cluster) |> range() |> paste(collapse = " to ")` (see @fig-clust).
 
 
 ```{r}
@@ -115,10 +118,10 @@ clusters |> group_by(cluster) |> tally() |> ggplot(aes(x = n)) + geom_histogram(
 
 ## Filtering observations
 
-Once the data was sorted into clusters accodring to the geometry of floor plans, we removed apartments that were deemed as essentially duplicates with respect to the values of average room noise and average room sunlight. These essential duplicates were identified as follows:
+Once the data was sorted into clusters according to the geometry of floor plans, we removed apartments that were deemed as essentially duplicates with respect to the values of average room noise and average room sunlight. These essential duplicates were identified as follows:
 
 First, we discretised the noise variable into categories by 5 dB increments and the sunlight variable by increments of 200 lx.
-Within each cluste and for each level of noise, we then retained one observation at every given level of the discretised sunlight variable (if available). The retained observation was the one with the lowest score on the original, continuous average room sunlight variable.
+Within each cluster and for each level of noise, we then retained one observation at every given level of the discretised sunlight variable (if available). The retained observation was the one with the lowest score on the original, continuous average room sunlight variable.
 
 This further reduced the data set to the final size of _n_ = `r sum(clusters$keep)` essentially unique apartments.
 
