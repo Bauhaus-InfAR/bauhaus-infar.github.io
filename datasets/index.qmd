@@ -3,4 +3,6 @@ title: Datasets
 listing:
     contents: ../static/data/*
     type: table
+    table-striped: true
+    date-format: "D MMM YYYY, H:mm:ss" 
 ---
