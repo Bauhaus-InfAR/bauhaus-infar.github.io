@@ -19,6 +19,7 @@ website:
     background: light
   repo-url: https://github.com/Bauhaus-InfAR/bauhaus-infar.github.io
   repo-actions: [edit, issue]
+  favicon: favicon.ico
 
 format:
   html:
