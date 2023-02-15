@@ -16,7 +16,7 @@ website:
         href: https://github.com/Bauhaus-InfAR
   page-footer: 
     center: "&copy; 2023 Milan Valášek"
-    background: light
+    background: primary
   repo-url: https://github.com/Bauhaus-InfAR/bauhaus-infar.github.io
   repo-actions: [edit, issue]
   favicon: favicon.ico
@@ -24,7 +24,7 @@ website:
 format:
   html:
     theme:
-      light: flatly
+      light: [flatly, theme-light.scss]
       dark: [flatly, theme-dark.scss]
     css: styles.css
     toc: true
