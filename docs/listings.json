@@ -2,7 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/data_cleaning/index.html"
+      "/posts/data_cleaning/index.html",
+      "/posts/shallow_nn/index.html"
     ]
   },
   {
