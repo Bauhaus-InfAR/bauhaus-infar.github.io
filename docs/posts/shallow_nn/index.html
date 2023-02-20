@@ -263,12 +263,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.head(<span class="dv">2000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s read in the floor plan images. These are saved locally on my computer, soz… <span class="lol">¯\_(ツ)_/¯</span></p>
-<p>I’ll create an empty array and then append each image in a loop. <code>cv2.imread(x, 0)</code> reads the files in greyscale. I want to normalise the values so that they don’t range between 0 and 255 but 0-1. I also want to get rid of the greyscale by forcing non-white pixels to be black. That is what <code>... == 1</code> does and <code>np.multiply(..., 1)</code> casts the resulting <code>boolean</code> as <code>integer</code>.</p>
+<p>I’ll create an empty array and then append each image in a loop. <code>cv2.imread(x, 0)</code> reads the files in greyscale. I want to normalise the values so that they don’t range between 0 and 255 but 0-1. I also want to get rid of the greyscale by forcing non-white pixels to be black. That is what <code>... == 1</code> does and <code>astype(int)</code> casts the resulting <code>boolean</code> as <code>integer</code>.</p>
 <div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>all_data <span class="op">=</span> []</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, df.shape[<span class="dv">0</span>]):</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> cv2.imread(<span class="st">"../../../similarity/0"</span> <span class="op">+</span> <span class="bu">str</span>(df.room_number.iloc[i]) <span class="op">+</span> <span class="st">"_room/"</span> <span class="op">+</span> <span class="bu">str</span>(df.room_number.iloc[i]) <span class="op">+</span> <span class="st">"room_"</span> <span class="op">+</span> df.bfa.iloc[i] <span class="op">+</span> <span class="st">".png"</span>, <span class="dv">0</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    all_data.append(np.multiply((img <span class="op">/</span> <span class="dv">255</span>) <span class="op">==</span> <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    all_data.append(((img <span class="op">/</span> <span class="dv">255</span>) <span class="op">==</span> <span class="dv">1</span>).astype(<span class="bu">int</span>))</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to NumPy array so that it has .shape</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>all_data <span class="op">=</span> np.array(all_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -276,8 +276,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Let’s see if that worked:</p>
 <div class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt.imshow(all_data[<span class="dv">0</span>], cmap <span class="op">=</span> <span class="st">"gray"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="96">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x230f7b7fc40&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x22d48b9fbe0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="index_files/figure-html/cell-7-output-2.png" width="424" height="415"></p>
@@ -290,7 +290,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[<span class="st">"room_number"</span>].values.reshape(df.shape[<span class="dv">0</span>], <span class="dv">1</span>) <span class="co"># only keep relevant columns</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (df <span class="op">==</span> <span class="dv">1</span>).astype(<span class="bu">int</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>As a final step in data wrangling, I’m creating a 50-50 split of the data into train and test sets.</p>
+<p>As a final step in data wrangling, I’m creating a 30-70 split of the data into train and test sets.</p>
 <div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>train_ind <span class="op">=</span> np.random.choice(<span class="bu">range</span>(<span class="dv">0</span>, df.shape[<span class="dv">0</span>]), <span class="dv">600</span>, replace<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.zeros(df.shape[<span class="dv">0</span>], dtype<span class="op">=</span><span class="bu">bool</span>)</span>
@@ -359,12 +359,7 @@ B^{[1]} = \begin{bmatrix}
 \begin{aligned}
 \mathbf{A}^{[1]} &amp;= \tanh(\mathbf{Z}^{[1]}) \\
 Z^{[2]} &amp;= \mathbf{A}^{[1]}W^{[2]} + b^{[2]} \\
-\hat{Y} &amp;= Z^{[2]} = \sigma(Z^{[2]})
-\end{aligned}
-\]</span></p>
-<!-- Given the above, I'll define a function $f(\mathbf{W}^{[1]}, B^{[1]}, \mathbf{W}^{[2]}, B^{[2]}) = \hat{Y}$. This is just for the purpose of notation in the derivatives below. -->
-<p><span class="math display">\[
-\begin{aligned}
+\hat{Y} &amp;= Z^{[2]} = \sigma(Z^{[2]}) \\
 y^{(i)}_{pred} &amp;= \begin{cases}
     1 &amp; \text{if }\hat{y}^{(i)} &gt; 0.5 \\
     0 &amp; \text{otherwise}
@@ -440,7 +435,7 @@ Note
 <p><span class="math display">\[
 \mathcal{L}(\mathbf{W}^{[1]}, B^{[1]}, W^{[2]}, b^{[2]}) = y^{(i)}\log(\hat{y}^{(i)}) + (1-y^{(i)})\log(1-\hat{y}^{(i)}),
 \]</span></p>
-<p>with the model cost function being the average of all <span class="math inline">\(\mathcal{L}\)</span>, for each example:</p>
+<p>with the model cost function being the average of all <span class="math inline">\(\mathcal{L}\)</span>, one for each example:</p>
 <p><span class="math display">\[
 \mathcal{J} = -\frac{1}{2}\sum_{i=0}^{m}\mathcal{L}_i
 \]</span></p>
@@ -568,7 +563,7 @@ Note
 <div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> nn_model(X_train, Y_train, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Cost after iteration 0: 0.6930327112203966</code></pre>
+<pre><code>Cost after iteration 0: 0.6931113953801328</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Model converged in 1.7 seconds after 10 iterations</code></pre>
@@ -594,7 +589,7 @@ Note
 </div>
 <div class="cell" data-execution_count="18">
 <div class="cell-output cell-output-display">
-<p>Our simple model correctly classified 63.7% of the floor plans in the test set</p>
+<p>Our simple model correctly classified 64.7% of the floor plans in the test set</p>
 </div>
 </div>
 <p>Not amazing but given that the model only uses raw pixel values of the images, it’s not that bad either.</p>

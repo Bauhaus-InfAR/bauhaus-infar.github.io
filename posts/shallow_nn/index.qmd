@@ -49,13 +49,13 @@ df = df.head(2000)
 
 Let's read in the floor plan images. These are saved locally on my computer, soz...  <span class="lol">¯\\\_(ツ)\_/¯</span>
 
-I'll create an empty array and then append each image in a loop. `cv2.imread(x, 0)` reads the files in greyscale. I want to normalise the values so that they don't range between 0 and 255 but 0-1. I also want to get rid of the greyscale by forcing non-white pixels to be black. That is what `... == 1` does and `np.multiply(..., 1)` casts the resulting `boolean` as `integer`.
+I'll create an empty array and then append each image in a loop. `cv2.imread(x, 0)` reads the files in greyscale. I want to normalise the values so that they don't range between 0 and 255 but 0-1. I also want to get rid of the greyscale by forcing non-white pixels to be black. That is what `... == 1` does and `astype(int)` casts the resulting `boolean` as `integer`.
 
 ```{python}
 all_data = []
 for i in range(0, df.shape[0]):
     img = cv2.imread("../../../similarity/0" + str(df.room_number.iloc[i]) + "_room/" + str(df.room_number.iloc[i]) + "room_" + df.bfa.iloc[i] + ".png", 0)
-    all_data.append(np.multiply((img / 255) == 1, 1))
+    all_data.append(((img / 255) == 1).astype(int))
 
 # convert to NumPy array so that it has .shape
 all_data = np.array(all_data)
@@ -76,7 +76,7 @@ df = df["room_number"].values.reshape(df.shape[0], 1) # only keep relevant colum
 df = (df == 1).astype(int)
 ```
 
-As a final step in data wrangling, I'm creating a 50-50 split of the data into train and test sets.
+As a final step in data wrangling, I'm creating a 30-70 split of the data into train and test sets.
 ```{python}
 train_ind = np.random.choice(range(0, df.shape[0]), 600, replace=False)
 mask = np.zeros(df.shape[0], dtype=bool)
@@ -143,14 +143,7 @@ $$
 \begin{aligned}
 \mathbf{A}^{[1]} &= \tanh(\mathbf{Z}^{[1]}) \\
 Z^{[2]} &= \mathbf{A}^{[1]}W^{[2]} + b^{[2]} \\
-\hat{Y} &= Z^{[2]} = \sigma(Z^{[2]})
-\end{aligned}
-$$
-
-<!-- Given the above, I'll define a function $f(\mathbf{W}^{[1]}, B^{[1]}, \mathbf{W}^{[2]}, B^{[2]}) = \hat{Y}$. This is just for the purpose of notation in the derivatives below. -->
-
-$$
-\begin{aligned}
+\hat{Y} &= Z^{[2]} = \sigma(Z^{[2]}) \\
 y^{(i)}_{pred} &= \begin{cases}
     1 & \text{if }\hat{y}^{(i)} > 0.5 \\
     0 & \text{otherwise}
@@ -219,7 +212,7 @@ $$
 \mathcal{L}(\mathbf{W}^{[1]}, B^{[1]}, W^{[2]}, b^{[2]}) = y^{(i)}\log(\hat{y}^{(i)}) + (1-y^{(i)})\log(1-\hat{y}^{(i)}),
 $$
 
-with the model cost function being the average of all $\mathcal{L}$, for each example:
+with the model cost function being the average of all $\mathcal{L}$, one for each example:
 
 $$
 \mathcal{J} = -\frac{1}{2}\sum_{i=0}^{m}\mathcal{L}_i
