@@ -196,7 +196,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#bp-implementation" id="toc-bp-implementation" class="nav-link" data-scroll-target="#bp-implementation">BP implementation</a></li>
   </ul></li>
   <li><a href="#full-model" id="toc-full-model" class="nav-link" data-scroll-target="#full-model">Full model</a></li>
-  <li><a href="#testing-model" id="toc-testing-model" class="nav-link" data-scroll-target="#testing-model">Testing model</a></li>
+  <li><a href="#testing-the-model" id="toc-testing-the-model" class="nav-link" data-scroll-target="#testing-the-model">Testing the model</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Bauhaus-InfAR/bauhaus-infar.github.io/edit/main/posts/shallow_nn/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Bauhaus-InfAR/bauhaus-infar.github.io/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -276,8 +276,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Let’s see if that worked:</p>
 <div class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt.imshow(all_data[<span class="dv">0</span>], cmap <span class="op">=</span> <span class="st">"gray"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x22d48b9fbe0&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="96">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x17e9086c0a0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="index_files/figure-html/cell-7-output-2.png" width="424" height="415"></p>
@@ -478,7 +478,7 @@ Note
 &amp;= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \circ (1 - \mathbf{A}^{[1]}\circ\mathbf{A}^{[1]}) \\
 &amp;= dZ^{[1]} \\
 \mathcal{J}^\prime_{\mathbf{W}^{[1]}} &amp;= \frac{1}{m}\mathbf{X}^\textsf{T}dZ^{[1]} \\
-\mathcal{J}^\prime_{B^{[1]}} &amp;= \frac{1}{m}\sum_{i=1}^{m}dZ_i^{[1]} \\
+\mathcal{J}^\prime_{B^{[1]}} &amp;= \frac{1}{m}\sum_{i=1}^{m}dZ_{ij}^{[1]} \\
 \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(g^\prime(\mathbf{Z}^{[1]})\)</span> is the derivative of the activation (link) function in the hidden layer, in this case the <span class="math inline">\(\tanh\)</span> function. <span class="math inline">\(g(\mathbf{Z}^{[1]}) = \tanh(\mathbf{Z}^{[1]}) = \mathbf{A}^{[1]}\)</span> and its derivative is <span class="math inline">\(1 - \mathbf{A}^{[1]}\circ\mathbf{A}^{[1]}\)</span>.</p>
@@ -499,22 +499,24 @@ Note
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    db2 <span class="op">=</span> np.mean(dZ2)</span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    dZ1 <span class="op">=</span> np.dot(dZ2, W2.T) <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> A1 <span class="op">**</span> <span class="dv">2</span>)</span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    dW1 <span class="op">=</span> np.dot(X.T, dZ1)<span class="op">/</span>m</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    db1 <span class="op">=</span> np.mean(dZ1)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    db1 <span class="op">=</span> np.<span class="bu">sum</span>(dZ1.T, axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)<span class="op">/</span>m</span>
 <span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dW1"</span>: dW1,</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"db1"</span> : db1,</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dW2"</span>: dW2,</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"db2"</span> : db2,</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># print(db1.shape)</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dW1"</span>: dW1,</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"db1"</span> : db1,</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dW2"</span>: dW2,</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"db2"</span> : db2,</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>On top of the back propagation function, we also need a function that updates parameters. The one below modifies the object passed to <code>params=</code> in place and doesn’t return anything.</p>
 <div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> update_params(params, grads, learning_rate):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"W1"</span>] <span class="op">-=</span> learning_rate <span class="op">*</span> grads[<span class="st">"dW1"</span>]</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"W2"</span>] <span class="op">-=</span> learning_rate <span class="op">*</span> grads[<span class="st">"dW2"</span>]</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"b1"</span>] <span class="op">-=</span> learning_rate <span class="op">*</span> grads[<span class="st">"db2"</span>]</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"b2"</span>] <span class="op">-=</span> learning_rate <span class="op">*</span> grads[<span class="st">"db2"</span>]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"b1"</span>] <span class="op">-=</span> learning_rate <span class="op">*</span> grads[<span class="st">"db1"</span>]</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"b2"</span>] <span class="op">-=</span> learning_rate <span class="op">*</span> grads[<span class="st">"db2"</span>]    </span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -561,18 +563,18 @@ Note
 </div>
 <p>Cool, all that’s left to do is run the model on the training set:</p>
 <div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> nn_model(X_train, Y_train, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> nn_model(X_train, Y_train, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Cost after iteration 0: 0.6931113953801328</code></pre>
+<pre><code>Cost after iteration 0: 0.6931060324765631</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Model converged in 1.7 seconds after 10 iterations</code></pre>
+<pre><code>Model converged in 2.2 seconds after 18 iterations</code></pre>
 </div>
 </div>
 <p>That was actually way faster than I would have expected…</p>
 </section>
-<section id="testing-model" class="level2">
-<h2 class="anchored" data-anchor-id="testing-model">Testing model</h2>
+<section id="testing-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="testing-the-model">Testing the model</h2>
 <p>First, a quick wrapper function that returns a binary array of predictions: 0 = not a one-room floor plan; 1 = one-room floor plan.</p>
 <div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(X, params):</span>
@@ -589,7 +591,7 @@ Note
 </div>
 <div class="cell" data-execution_count="18">
 <div class="cell-output cell-output-display">
-<p>Our simple model correctly classified 64.7% of the floor plans in the test set</p>
+<p>Our simple model correctly classified 64.1% of the floor plans in the test set</p>
 </div>
 </div>
 <p>Not amazing but given that the model only uses raw pixel values of the images, it’s not that bad either.</p>

@@ -252,7 +252,7 @@ $$
 &= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \circ (1 - \mathbf{A}^{[1]}\circ\mathbf{A}^{[1]}) \\
 &= dZ^{[1]} \\
 \mathcal{J}^\prime_{\mathbf{W}^{[1]}} &= \frac{1}{m}\mathbf{X}^\textsf{T}dZ^{[1]} \\
-\mathcal{J}^\prime_{B^{[1]}} &= \frac{1}{m}\sum_{i=1}^{m}dZ_i^{[1]} \\
+\mathcal{J}^\prime_{B^{[1]}} &= \frac{1}{m}\sum_{i=1}^{m}dZ_{ij}^{[1]} \\
 \end{aligned}
 $$
 
@@ -276,7 +276,9 @@ def backward(X, Y, params, fwd_steps):
     db2 = np.mean(dZ2)
     dZ1 = np.dot(dZ2, W2.T) * (1 - A1 ** 2)
     dW1 = np.dot(X.T, dZ1)/m
-    db1 = np.mean(dZ1)
+    db1 = np.sum(dZ1.T, axis=1, keepdims=True)/m
+
+    # print(db1.shape)
 
     return {
         "dW1": dW1,
@@ -292,8 +294,8 @@ On top of the back propagation function, we also need a function that updates pa
 def update_params(params, grads, learning_rate):
     params["W1"] -= learning_rate * grads["dW1"]
     params["W2"] -= learning_rate * grads["dW2"]
-    params["b1"] -= learning_rate * grads["db2"]
-    params["b2"] -= learning_rate * grads["db2"]
+    params["b1"] -= learning_rate * grads["db1"]
+    params["b2"] -= learning_rate * grads["db2"]    
 
     return
 ```
@@ -342,13 +344,13 @@ def nn_model(X, Y, n_nodes, learning_rate=.2, n_iter=10000, tol=1e-5, seed = Non
 Cool, all that's left to do is run the model on the training set:
 
 ```{python}
-m1 = nn_model(X_train, Y_train, 10)
+m1 = nn_model(X_train, Y_train, 4)
 ```
 
 That was actually way faster than I would have expected...
 
 
-## Testing model
+## Testing the model
 
 First, a quick wrapper function that returns a binary array of predictions: 0 = not a one-room floor plan; 1 = one-room floor plan.
 
@@ -362,8 +364,6 @@ Next, we need to use the previously learnt parameters stored in `m1` and pass th
 
 ```{python}
 pred = predict(X_test, m1["params"])
-
-
 ```
 
 Finally, let's calculate the classification accuracy:
