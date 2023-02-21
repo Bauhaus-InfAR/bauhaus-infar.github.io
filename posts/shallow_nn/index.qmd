@@ -11,6 +11,12 @@ execute:
 #   cache: true
 ---
 
+```{r setup}
+#| include: false
+# using R with reticulate instead of python let's me use knitr for inline code instead of the awkward display(Markdown(...)) - see last, commented out python code block
+library(reticulate)
+```
+
 Let's see if I can write a single hidden layer NN that would be able to say if an image of a floor plan shows a one-room apartment or not.
 
 First, load libraries.
@@ -374,10 +380,12 @@ acc = float((np.dot(Y_test.T, pred) + np.dot(1 - Y_test.T, 1 - pred)) / float(Y_
 
 ```{python}
 #| echo: false
-from IPython.display import display, Markdown
-display(Markdown("""
-Our simple model correctly classified {accuracy}% of the floor  plans in the test set
-""".format(accuracy = round(acc, 1))))
+# from IPython.display import display, Markdown
+# display(Markdown("""
+# Our simple model correctly classified {accuracy}% of the floor  plans in the test set.
+# """.format(accuracy = round(acc, 1))))
 ```
+
+Our simple model correctly classified `r round(py$acc, 1)`% of the floor  plans in the test set.
 
 Not amazing but given that the model only uses raw pixel values of the images, it's not that bad either.
