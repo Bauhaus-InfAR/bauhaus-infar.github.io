@@ -46,11 +46,10 @@ df.drop_duplicates("cluster", keep = "first", inplace = True)
 ```
 
 
-I also only want to keep 2,000 one- and four-room apartments.
+I also only want to keep one- and four-room apartments.
 
 ```{python}
 df = df[(df.room_number == 1) | (df.room_number == 4)]
-df = df.head(2000)
 ```
 
 Let's read in the floor plan images. These are saved locally on my computer, soz...  <span class="lol">¯\\\_(ツ)\_/¯</span>
@@ -58,9 +57,13 @@ Let's read in the floor plan images. These are saved locally on my computer, soz
 I'll create an empty array and then append each image in a loop. `cv2.imread(x, 0)` reads the files in greyscale. I want to normalise the values so that they don't range between 0 and 255 but 0-1. I also want to get rid of the greyscale by forcing non-white pixels to be black. That is what `... == 1` does and `astype(int)` casts the resulting `boolean` as `integer`.
 
 ```{python}
+n = 1000
+dims = 112
+
 all_data = []
 for i in range(0, df.shape[0]):
     img = cv2.imread("../../../similarity/0" + str(df.room_number.iloc[i]) + "_room/" + str(df.room_number.iloc[i]) + "room_" + df.bfa.iloc[i] + ".png", 0)
+    img = cv2.resize(img, (dims, dims))
     all_data.append(((img / 255) == 1).astype(int))
 
 # convert to NumPy array so that it has .shape
@@ -84,7 +87,7 @@ df = (df == 1).astype(int)
 
 As a final step in data wrangling, I'm creating a 30-70 split of the data into train and test sets.
 ```{python}
-train_ind = np.random.choice(range(0, df.shape[0]), 600, replace=False)
+train_ind = np.random.choice(range(0, df.shape[0]), n, replace=False)
 mask = np.zeros(df.shape[0], dtype=bool)
 mask[train_ind] = True
 X_train = all_data[mask]
@@ -103,7 +106,7 @@ Y_test = df[~mask]
 I'm following a linear regression convention below as that's the one I'm most familiar with. In ML literature, you may find the same equation expressed as $\mathbf{Z}^{[1]} = \mathbf{W}^{[1]\textsf{T}}\mathbf{X} + b$. This is really the same thing and the difference is only due to the fact that the $\mathbf{Z}^{[1]}$ and $\mathbf{W}^{[1]}$ matrices here are transposed with respect to those in ML literature.
 :::
 
-$$\mathbf{Z}^{[1]} = \mathbf{X}\mathbf{W}^{[1]} + B^{[1]},$$
+$$\mathbf{Z}^{[1]} = \mathbf{X}\mathbf{W}^{[1]} + b^{[1]},$$
 
 
 where
@@ -133,7 +136,7 @@ is a $n\times 4$ matrix of weights,
 with each column representing the weights for one of the four nodes of the hidden layer. Rows contain the regression weights for all of the $n$ features.
 
 $$
-B^{[1]} = \begin{bmatrix}
+b^{[1]} = \begin{bmatrix}
     b_1 \\
     b_2 \\
     b_3 \\
@@ -215,13 +218,13 @@ def forward(x, params):
 The loss function of this model for a single example is:
 
 $$
-\mathcal{L}(\mathbf{W}^{[1]}, B^{[1]}, W^{[2]}, b^{[2]}) = y^{(i)}\log(\hat{y}^{(i)}) + (1-y^{(i)})\log(1-\hat{y}^{(i)}),
+\mathcal{L}(\mathbf{W}^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}) = y^{(i)}\log(\hat{y}^{(i)}) + (1-y^{(i)})\log(1-\hat{y}^{(i)}),
 $$
 
 with the model cost function being the average of all $\mathcal{L}$, one for each example:
 
 $$
-\mathcal{J} = -\frac{1}{2}\sum_{i=0}^{m}\mathcal{L}_i
+\mathcal{J} = -\frac{1}{m}\sum_{i=0}^{m}\mathcal{L}_i
 $$
 
 
@@ -246,7 +249,7 @@ Given $\mathcal{J}$ defined above, we need the following derivatives[^1] to impl
 [^1]: I am really not sure if the terminology and notation are technically correct. The equations below represent the individual steps for the back propagation simultaneously over all examples. The outputs of the individual steps range from scalar to matrix. Whether or not "derivative" is the appropriate term, I don't know. I'm just a dumdum <span class="lol">¯\\\_(ツ)\_/¯</span>
 
 :::{.callout-note}
-$\circ$ denotes element-wise product.
+$\odot$ denotes element-wise product.
 :::
 
 $$
@@ -254,15 +257,15 @@ $$
 \mathcal{J}^\prime_{Z^{[2]}} &= A^{[2]} - Y \\ &= dZ^{[2]}\\
 \mathcal{J}^\prime_{W^{[2]}} &= \frac{1}{m}\mathbf{A}^{[1]\textsf{T}}dZ^{[2]} \\
 \mathcal{J}^\prime_{b^{[2]}} &= \frac{1}{m}\sum_{i=1}^{m}dZ_i^{[2]} \\
-\mathcal{J}^\prime_{\mathbf{Z}^{[1]}} &= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \circ g^\prime(\mathbf{Z}^{[1]}) \\
-&= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \circ (1 - \mathbf{A}^{[1]}\circ\mathbf{A}^{[1]}) \\
+\mathcal{J}^\prime_{\mathbf{Z}^{[1]}} &= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \odot g^\prime(\mathbf{Z}^{[1]}) \\
+&= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \odot (1 - \mathbf{A}^{[1]}\odot\mathbf{A}^{[1]}) \\
 &= dZ^{[1]} \\
 \mathcal{J}^\prime_{\mathbf{W}^{[1]}} &= \frac{1}{m}\mathbf{X}^\textsf{T}dZ^{[1]} \\
-\mathcal{J}^\prime_{B^{[1]}} &= \frac{1}{m}\sum_{i=1}^{m}dZ_{ij}^{[1]} \\
+\mathcal{J}^\prime_{b^{[1]}} &= \frac{1}{m}\sum_{i=1}^{m}dZ_{ij}^{[1]}
 \end{aligned}
 $$
 
-$g^\prime(\mathbf{Z}^{[1]})$ is the derivative of the activation (link) function in the hidden layer, in this case the $\tanh$ function. $g(\mathbf{Z}^{[1]}) = \tanh(\mathbf{Z}^{[1]}) = \mathbf{A}^{[1]}$ and its derivative is $1 - \mathbf{A}^{[1]}\circ\mathbf{A}^{[1]}$.
+$g^\prime(\mathbf{Z}^{[1]})$ is the derivative of the activation (link) function in the hidden layer, in this case the $\tanh$ function. $g(\mathbf{Z}^{[1]}) = \tanh(\mathbf{Z}^{[1]}) = \mathbf{A}^{[1]}$ and its derivative is $1 - \mathbf{A}^{[1]}\odot\mathbf{A}^{[1]}$.
 
 ### BP implementation
 
@@ -310,13 +313,18 @@ def update_params(params, grads, learning_rate):
 
 OK, time to put it all together. I'm also including a tolerance parameter. If the absolute difference between the costs of two consecutive iterations, the model is deemed to have converged and the loop breaks.
 
+I'm aslo going to implement a variable learning rate...
+
 ```{python}
-def nn_model(X, Y, n_nodes, learning_rate=.2, n_iter=10000, tol=1e-5, seed = None, print_cost=True):
+def nn_model(X, Y, n_nodes, learning_rate=.2, n_iter=10000, tol=1e-8, seed = None, print_cost=True):
     start = time.time() # start timer
     if seed is not None:
         np.random.seed(seed)
 
-    J = []
+    J = [1] * n_iter
+    all_learning_rates = [0] * n_iter
+    n_falling_cost = 0
+
     n_x, n_samp, n_y, foo = model_dimensions(X, Y, n_nodes)
     gradients = {
         "dW1": np.zeros(n_x * n_nodes).reshape(n_x, n_nodes),
@@ -331,7 +339,14 @@ def nn_model(X, Y, n_nodes, learning_rate=.2, n_iter=10000, tol=1e-5, seed = Non
             print("Model failed to converge")
             break
         Y_hat, steps = forward(X, params)
-        J.append(cost(Y_hat, Y))
+        J[i] = cost(Y_hat, Y)
+        if (J[i] <= J[i - 1]):
+            n_falling_cost += 1
+            if n_falling_cost % 10 == 0:
+                learning_rate *= 1.1
+        else:
+            n_falling_cost = 0
+            learning_rate /= 1.1
         if i > 0 and abs(J[i - 1] - J[i]) < tol:
             end = time.time()
             elapsed = end - start
@@ -339,22 +354,43 @@ def nn_model(X, Y, n_nodes, learning_rate=.2, n_iter=10000, tol=1e-5, seed = Non
             break
         gradients = backward(X, Y, params, steps)
         update_params(params, gradients, learning_rate)
+        all_learning_rates[i] = learning_rate
 
-        if print_cost and i % 50 == 0:
+        if print_cost and i % 100 == 0:
             print (f'Cost after iteration {i}: {J[i]}')
-        
 
-    return {"params": params, "cost": J}
+    if i == (n_iter):
+        if (tol == 0):
+            print("All iterations completed")
+        else:
+            print("Model failed to converge")   
+
+    Y_pred = (Y_hat > .5).astype(int)
+    acc = float((np.dot(Y.T, Y_pred) + np.dot(1 - Y.T, 1 - Y_pred)) / float(Y.size) * 100)
+
+    return {"params": params, "cost": J[0:i], "yhat": Y_hat, "prediction": Y_pred, "accuracy": acc, "alpha": all_learning_rates[0:i]}
 ```
 
 Cool, all that's left to do is run the model on the training set:
 
 ```{python}
-m1 = nn_model(X_train, Y_train, 4)
+m1 = nn_model(
+    X_train, Y_train,
+    n_nodes = 4,
+    learning_rate = .01,
+    n_iter = 10000,
+    tol = 1e-8,
+    print_cost = False)
 ```
 
 That was actually way faster than I would have expected...
 
+Let's see the cost over iterations as well as how the learning rate developed.
+
+```{python}
+plt.plot(m1["cost"])
+plt.plot(m1["alpha"])
+```
 
 ## Testing the model
 
@@ -375,7 +411,7 @@ pred = predict(X_test, m1["params"])
 Finally, let's calculate the classification accuracy:
 
 ```{python}
-acc = float((np.dot(Y_test.T, pred) + np.dot(1 - Y_test.T, 1 - pred)) / float(Y_test.size) * 100)
+acc_test = float((np.dot(Y_test.T, pred) + np.dot(1 - Y_test.T, 1 - pred)) / float(Y_test.size) * 100)
 ```
 
 ```{python}
@@ -386,6 +422,6 @@ acc = float((np.dot(Y_test.T, pred) + np.dot(1 - Y_test.T, 1 - pred)) / float(Y_
 # """.format(accuracy = round(acc, 1))))
 ```
 
-Our simple model correctly classified `r round(py$acc, 1)`% of the floor  plans in the test set.
+Our simple model correctly classified `r round(py$m1$accuracy, 1)`% of the floor  plans in the training set and `r round(py$acc_test, 1)`% of the floor  plans in the test set.
 
 Not amazing but given that the model only uses raw pixel values of the images, it's not that bad either.

@@ -257,21 +257,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df.drop_duplicates(<span class="st">"cluster"</span>, keep <span class="op">=</span> <span class="st">"first"</span>, inplace <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>I also only want to keep 2,000 one- and four-room apartments.</p>
+<p>I also only want to keep one- and four-room apartments.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[(df.room_number <span class="op">==</span> <span class="dv">1</span>) <span class="op">|</span> (df.room_number <span class="op">==</span> <span class="dv">4</span>)]</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.head(<span class="dv">2000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[(df.room_number <span class="op">==</span> <span class="dv">1</span>) <span class="op">|</span> (df.room_number <span class="op">==</span> <span class="dv">4</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s read in the floor plan images. These are saved locally on my computer, soz… <span class="lol">¯\_(ツ)_/¯</span></p>
 <p>I’ll create an empty array and then append each image in a loop. <code>cv2.imread(x, 0)</code> reads the files in greyscale. I want to normalise the values so that they don’t range between 0 and 255 but 0-1. I also want to get rid of the greyscale by forcing non-white pixels to be black. That is what <code>... == 1</code> does and <code>astype(int)</code> casts the resulting <code>boolean</code> as <code>integer</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>all_data <span class="op">=</span> []</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, df.shape[<span class="dv">0</span>]):</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> cv2.imread(<span class="st">"../../../similarity/0"</span> <span class="op">+</span> <span class="bu">str</span>(df.room_number.iloc[i]) <span class="op">+</span> <span class="st">"_room/"</span> <span class="op">+</span> <span class="bu">str</span>(df.room_number.iloc[i]) <span class="op">+</span> <span class="st">"room_"</span> <span class="op">+</span> df.bfa.iloc[i] <span class="op">+</span> <span class="st">".png"</span>, <span class="dv">0</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    all_data.append(((img <span class="op">/</span> <span class="dv">255</span>) <span class="op">==</span> <span class="dv">1</span>).astype(<span class="bu">int</span>))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to NumPy array so that it has .shape</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>all_data <span class="op">=</span> np.array(all_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dims <span class="op">=</span> <span class="dv">112</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>all_data <span class="op">=</span> []</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, df.shape[<span class="dv">0</span>]):</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> cv2.imread(<span class="st">"../../../similarity/0"</span> <span class="op">+</span> <span class="bu">str</span>(df.room_number.iloc[i]) <span class="op">+</span> <span class="st">"_room/"</span> <span class="op">+</span> <span class="bu">str</span>(df.room_number.iloc[i]) <span class="op">+</span> <span class="st">"room_"</span> <span class="op">+</span> df.bfa.iloc[i] <span class="op">+</span> <span class="st">".png"</span>, <span class="dv">0</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    img <span class="op">=</span> cv2.resize(img, (dims, dims))</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    all_data.append(((img <span class="op">/</span> <span class="dv">255</span>) <span class="op">==</span> <span class="dv">1</span>).astype(<span class="bu">int</span>))</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to NumPy array so that it has .shape</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>all_data <span class="op">=</span> np.array(all_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s see if that worked:</p>
 <div class="cell">
@@ -289,7 +292,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>As a final step in data wrangling, I’m creating a 30-70 split of the data into train and test sets.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>train_ind <span class="op">=</span> np.random.choice(<span class="bu">range</span>(<span class="dv">0</span>, df.shape[<span class="dv">0</span>]), <span class="dv">600</span>, replace<span class="op">=</span><span class="va">False</span>)</span>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>train_ind <span class="op">=</span> np.random.choice(<span class="bu">range</span>(<span class="dv">0</span>, df.shape[<span class="dv">0</span>]), n, replace<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.zeros(df.shape[<span class="dv">0</span>], dtype<span class="op">=</span><span class="bu">bool</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>mask[train_ind] <span class="op">=</span> <span class="va">True</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> all_data[mask]</span>
@@ -322,7 +325,7 @@ Note
 <p>I’m following a linear regression convention below as that’s the one I’m most familiar with. In ML literature, you may find the same equation expressed as <span class="math inline">\(\mathbf{Z}^{[1]} = \mathbf{W}^{[1]\textsf{T}}\mathbf{X} + b\)</span>. This is really the same thing and the difference is only due to the fact that the <span class="math inline">\(\mathbf{Z}^{[1]}\)</span> and <span class="math inline">\(\mathbf{W}^{[1]}\)</span> matrices here are transposed with respect to those in ML literature.</p>
 </div>
 </div>
-<p><span class="math display">\[\mathbf{Z}^{[1]} = \mathbf{X}\mathbf{W}^{[1]} + B^{[1]},\]</span></p>
+<p><span class="math display">\[\mathbf{Z}^{[1]} = \mathbf{X}\mathbf{W}^{[1]} + b^{[1]},\]</span></p>
 <p>where</p>
 <p><span class="math display">\[
 \mathbf{X} = \begin{bmatrix}
@@ -343,7 +346,7 @@ Note
 \]</span></p>
 <p>is a <span class="math inline">\(n\times 4\)</span> matrix of weights, with each column representing the weights for one of the four nodes of the hidden layer. Rows contain the regression weights for all of the <span class="math inline">\(n\)</span> features.</p>
 <p><span class="math display">\[
-B^{[1]} = \begin{bmatrix}
+b^{[1]} = \begin{bmatrix}
     b_1 \\
     b_2 \\
     b_3 \\
@@ -430,11 +433,11 @@ Note
 <h2 class="anchored" data-anchor-id="cost-function">Cost function</h2>
 <p>The loss function of this model for a single example is:</p>
 <p><span class="math display">\[
-\mathcal{L}(\mathbf{W}^{[1]}, B^{[1]}, W^{[2]}, b^{[2]}) = y^{(i)}\log(\hat{y}^{(i)}) + (1-y^{(i)})\log(1-\hat{y}^{(i)}),
+\mathcal{L}(\mathbf{W}^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}) = y^{(i)}\log(\hat{y}^{(i)}) + (1-y^{(i)})\log(1-\hat{y}^{(i)}),
 \]</span></p>
 <p>with the model cost function being the average of all <span class="math inline">\(\mathcal{L}\)</span>, one for each example:</p>
 <p><span class="math display">\[
-\mathcal{J} = -\frac{1}{2}\sum_{i=0}^{m}\mathcal{L}_i
+\mathcal{J} = -\frac{1}{m}\sum_{i=0}^{m}\mathcal{L}_i
 \]</span></p>
 <section id="cost-implementation" class="level3">
 <h3 class="anchored" data-anchor-id="cost-implementation">Cost implementation</h3>
@@ -463,7 +466,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><span class="math inline">\(\circ\)</span> denotes element-wise product.</p>
+<p><span class="math inline">\(\odot\)</span> denotes element-wise product.</p>
 </div>
 </div>
 <p><span class="math display">\[
@@ -471,14 +474,14 @@ Note
 \mathcal{J}^\prime_{Z^{[2]}} &amp;= A^{[2]} - Y \\ &amp;= dZ^{[2]}\\
 \mathcal{J}^\prime_{W^{[2]}} &amp;= \frac{1}{m}\mathbf{A}^{[1]\textsf{T}}dZ^{[2]} \\
 \mathcal{J}^\prime_{b^{[2]}} &amp;= \frac{1}{m}\sum_{i=1}^{m}dZ_i^{[2]} \\
-\mathcal{J}^\prime_{\mathbf{Z}^{[1]}} &amp;= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \circ g^\prime(\mathbf{Z}^{[1]}) \\
-&amp;= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \circ (1 - \mathbf{A}^{[1]}\circ\mathbf{A}^{[1]}) \\
+\mathcal{J}^\prime_{\mathbf{Z}^{[1]}} &amp;= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \odot g^\prime(\mathbf{Z}^{[1]}) \\
+&amp;= dZ^{[2]}\mathbf{W}^{[2]\textsf{T}} \odot (1 - \mathbf{A}^{[1]}\odot\mathbf{A}^{[1]}) \\
 &amp;= dZ^{[1]} \\
 \mathcal{J}^\prime_{\mathbf{W}^{[1]}} &amp;= \frac{1}{m}\mathbf{X}^\textsf{T}dZ^{[1]} \\
-\mathcal{J}^\prime_{B^{[1]}} &amp;= \frac{1}{m}\sum_{i=1}^{m}dZ_{ij}^{[1]} \\
+\mathcal{J}^\prime_{b^{[1]}} &amp;= \frac{1}{m}\sum_{i=1}^{m}dZ_{ij}^{[1]}
 \end{aligned}
 \]</span></p>
-<p><span class="math inline">\(g^\prime(\mathbf{Z}^{[1]})\)</span> is the derivative of the activation (link) function in the hidden layer, in this case the <span class="math inline">\(\tanh\)</span> function. <span class="math inline">\(g(\mathbf{Z}^{[1]}) = \tanh(\mathbf{Z}^{[1]}) = \mathbf{A}^{[1]}\)</span> and its derivative is <span class="math inline">\(1 - \mathbf{A}^{[1]}\circ\mathbf{A}^{[1]}\)</span>.</p>
+<p><span class="math inline">\(g^\prime(\mathbf{Z}^{[1]})\)</span> is the derivative of the activation (link) function in the hidden layer, in this case the <span class="math inline">\(\tanh\)</span> function. <span class="math inline">\(g(\mathbf{Z}^{[1]}) = \tanh(\mathbf{Z}^{[1]}) = \mathbf{A}^{[1]}\)</span> and its derivative is <span class="math inline">\(1 - \mathbf{A}^{[1]}\odot\mathbf{A}^{[1]}\)</span>.</p>
 <section id="bp-implementation" class="level3">
 <h3 class="anchored" data-anchor-id="bp-implementation">BP implementation</h3>
 <div class="cell">
@@ -522,72 +525,105 @@ Note
 <section id="full-model" class="level2">
 <h2 class="anchored" data-anchor-id="full-model">Full model</h2>
 <p>OK, time to put it all together. I’m also including a tolerance parameter. If the absolute difference between the costs of two consecutive iterations, the model is deemed to have converged and the loop breaks.</p>
+<p>I’m aslo going to implement a variable learning rate…</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nn_model(X, Y, n_nodes, learning_rate<span class="op">=</span><span class="fl">.2</span>, n_iter<span class="op">=</span><span class="dv">10000</span>, tol<span class="op">=</span><span class="fl">1e-5</span>, seed <span class="op">=</span> <span class="va">None</span>, print_cost<span class="op">=</span><span class="va">True</span>):</span>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nn_model(X, Y, n_nodes, learning_rate<span class="op">=</span><span class="fl">.2</span>, n_iter<span class="op">=</span><span class="dv">10000</span>, tol<span class="op">=</span><span class="fl">1e-8</span>, seed <span class="op">=</span> <span class="va">None</span>, print_cost<span class="op">=</span><span class="va">True</span>):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.time() <span class="co"># start timer</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> seed <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        np.random.seed(seed)</span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    J <span class="op">=</span> []</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    n_x, n_samp, n_y, foo <span class="op">=</span> model_dimensions(X, Y, n_nodes)</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    gradients <span class="op">=</span> {</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dW1"</span>: np.zeros(n_x <span class="op">*</span> n_nodes).reshape(n_x, n_nodes),</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"db1"</span> : np.zeros(n_nodes).reshape(n_nodes, <span class="dv">1</span>),</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dW2"</span>: np.zeros(n_nodes).reshape(n_nodes, <span class="dv">1</span>),</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"db2"</span> : <span class="dv">0</span>,</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> params_init(n_x, n_y, n_nodes)</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, n_iter <span class="op">+</span> <span class="dv">1</span>):</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">==</span> n_iter:</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">"Model failed to converge"</span>)</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        Y_hat, steps <span class="op">=</span> forward(X, params)</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>        J.append(cost(Y_hat, Y))</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">&gt;</span> <span class="dv">0</span> <span class="kw">and</span> <span class="bu">abs</span>(J[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">-</span> J[i]) <span class="op">&lt;</span> tol:</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>            end <span class="op">=</span> time.time()</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>            elapsed <span class="op">=</span> end <span class="op">-</span> start</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span> (<span class="ss">f'Model converged in </span><span class="sc">{</span><span class="bu">round</span>(elapsed, <span class="dv">1</span>)<span class="sc">}</span><span class="ss"> seconds after </span><span class="sc">{</span>i <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> iterations'</span>)</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>        gradients <span class="op">=</span> backward(X, Y, params, steps)</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>        update_params(params, gradients, learning_rate)</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> print_cost <span class="kw">and</span> i <span class="op">%</span> <span class="dv">50</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span> (<span class="ss">f'Cost after iteration </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>J[i]<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"params"</span>: params, <span class="st">"cost"</span>: J}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    J <span class="op">=</span> [<span class="dv">1</span>] <span class="op">*</span> n_iter</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    all_learning_rates <span class="op">=</span> [<span class="dv">0</span>] <span class="op">*</span> n_iter</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    n_falling_cost <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    n_x, n_samp, n_y, foo <span class="op">=</span> model_dimensions(X, Y, n_nodes)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    gradients <span class="op">=</span> {</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dW1"</span>: np.zeros(n_x <span class="op">*</span> n_nodes).reshape(n_x, n_nodes),</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"db1"</span> : np.zeros(n_nodes).reshape(n_nodes, <span class="dv">1</span>),</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dW2"</span>: np.zeros(n_nodes).reshape(n_nodes, <span class="dv">1</span>),</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"db2"</span> : <span class="dv">0</span>,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> params_init(n_x, n_y, n_nodes)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, n_iter <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">==</span> n_iter:</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">"Model failed to converge"</span>)</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>        Y_hat, steps <span class="op">=</span> forward(X, params)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>        J[i] <span class="op">=</span> cost(Y_hat, Y)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (J[i] <span class="op">&lt;=</span> J[i <span class="op">-</span> <span class="dv">1</span>]):</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>            n_falling_cost <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> n_falling_cost <span class="op">%</span> <span class="dv">10</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>                learning_rate <span class="op">*=</span> <span class="fl">1.1</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>            n_falling_cost <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>            learning_rate <span class="op">/=</span> <span class="fl">1.1</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">&gt;</span> <span class="dv">0</span> <span class="kw">and</span> <span class="bu">abs</span>(J[i <span class="op">-</span> <span class="dv">1</span>] <span class="op">-</span> J[i]) <span class="op">&lt;</span> tol:</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>            end <span class="op">=</span> time.time()</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>            elapsed <span class="op">=</span> end <span class="op">-</span> start</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span> (<span class="ss">f'Model converged in </span><span class="sc">{</span><span class="bu">round</span>(elapsed, <span class="dv">1</span>)<span class="sc">}</span><span class="ss"> seconds after </span><span class="sc">{</span>i <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> iterations'</span>)</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>        gradients <span class="op">=</span> backward(X, Y, params, steps)</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>        update_params(params, gradients, learning_rate)</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>        all_learning_rates[i] <span class="op">=</span> learning_rate</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> print_cost <span class="kw">and</span> i <span class="op">%</span> <span class="dv">100</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span> (<span class="ss">f'Cost after iteration </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>J[i]<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> i <span class="op">==</span> (n_iter):</span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (tol <span class="op">==</span> <span class="dv">0</span>):</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">"All iterations completed"</span>)</span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">"Model failed to converge"</span>)   </span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>    Y_pred <span class="op">=</span> (Y_hat <span class="op">&gt;</span> <span class="fl">.5</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>    acc <span class="op">=</span> <span class="bu">float</span>((np.dot(Y.T, Y_pred) <span class="op">+</span> np.dot(<span class="dv">1</span> <span class="op">-</span> Y.T, <span class="dv">1</span> <span class="op">-</span> Y_pred)) <span class="op">/</span> <span class="bu">float</span>(Y.size) <span class="op">*</span> <span class="dv">100</span>)</span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"params"</span>: params, <span class="st">"cost"</span>: J[<span class="dv">0</span>:i], <span class="st">"yhat"</span>: Y_hat, <span class="st">"prediction"</span>: Y_pred, <span class="st">"accuracy"</span>: acc, <span class="st">"alpha"</span>: all_learning_rates[<span class="dv">0</span>:i]}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Cool, all that’s left to do is run the model on the training set:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> nn_model(X_train, Y_train, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> nn_model(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    X_train, Y_train,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    n_nodes <span class="op">=</span> <span class="dv">4</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    learning_rate <span class="op">=</span> <span class="fl">.01</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    n_iter <span class="op">=</span> <span class="dv">10000</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    tol <span class="op">=</span> <span class="fl">1e-8</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    print_cost <span class="op">=</span> <span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Cost after iteration 0: 0.6931421075348263
-Model converged in 7.1 seconds after 19 iterations</code></pre>
+<pre><code>Model converged in 53.3 seconds after 518 iterations</code></pre>
 </div>
 </div>
 <p>That was actually way faster than I would have expected…</p>
+<p>Let’s see the cost over iterations as well as how the learning rate developed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>plt.plot(m1[<span class="st">"cost"</span>])</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>plt.plot(m1[<span class="st">"alpha"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-15-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 <section id="testing-the-model" class="level2">
 <h2 class="anchored" data-anchor-id="testing-the-model">Testing the model</h2>
 <p>First, a quick wrapper function that returns a binary array of predictions: 0 = not a one-room floor plan; 1 = one-room floor plan.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(X, params):</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    yhat, steps <span class="op">=</span> forward(X, params)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (yhat <span class="op">&gt;</span> <span class="fl">.5</span>).astype(<span class="bu">int</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(X, params):</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    yhat, steps <span class="op">=</span> forward(X, params)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (yhat <span class="op">&gt;</span> <span class="fl">.5</span>).astype(<span class="bu">int</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, we need to use the previously learnt parameters stored in <code>m1</code> and pass the test dataset to <code>predict()</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> predict(X_test, m1[<span class="st">"params"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> predict(X_test, m1[<span class="st">"params"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Finally, let’s calculate the classification accuracy:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>acc <span class="op">=</span> <span class="bu">float</span>((np.dot(Y_test.T, pred) <span class="op">+</span> np.dot(<span class="dv">1</span> <span class="op">-</span> Y_test.T, <span class="dv">1</span> <span class="op">-</span> pred)) <span class="op">/</span> <span class="bu">float</span>(Y_test.size) <span class="op">*</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>acc_test <span class="op">=</span> <span class="bu">float</span>((np.dot(Y_test.T, pred) <span class="op">+</span> np.dot(<span class="dv">1</span> <span class="op">-</span> Y_test.T, <span class="dv">1</span> <span class="op">-</span> pred)) <span class="op">/</span> <span class="bu">float</span>(Y_test.size) <span class="op">*</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 
 </div>
-<p>Our simple model correctly classified 63.8% of the floor plans in the test set.</p>
+<p>Our simple model correctly classified 79.3% of the floor plans in the training set and 80.1% of the floor plans in the test set.</p>
 <p>Not amazing but given that the model only uses raw pixel values of the images, it’s not that bad either.</p>
 
 

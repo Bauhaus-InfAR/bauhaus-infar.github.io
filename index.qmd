@@ -3,6 +3,7 @@ title: "Welcome to InfAR @ Bauhaus-Uni Weimar"
 listing:
     contents: posts
     date-format: D MMM YYYY
+    sort: "date desc"
 ---
 
 ## Neufert 4.0 links
