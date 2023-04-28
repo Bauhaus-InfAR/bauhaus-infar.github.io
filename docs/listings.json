@@ -1,17 +1,14 @@
 [
   {
+    "listing": "/datasets/index.html",
+    "items": []
+  },
+  {
     "listing": "/index.html",
     "items": [
+      "/posts/quarto_workshop/index.html",
       "/posts/shallow_nn/index.html",
       "/posts/data_cleaning/index.html"
     ]
-  },
-  {
-    "listing": "/data.html",
-    "items": []
-  },
-  {
-    "listing": "/datasets/index.html",
-    "items": []
   }
 ]

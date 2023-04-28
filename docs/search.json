@@ -1,12 +1,5 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Welcome to InfAR @ Bauhaus-Uni Weimar",
-    "section": "",
-    "text": "Notion\nMiro board\nDatasets"
-  },
-  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
@@ -14,32 +7,46 @@
     "text": "About this site"
   },
   {
-    "objectID": "posts/data_cleaning.html#descriptives",
-    "href": "posts/data_cleaning.html#descriptives",
-    "title": "Data cleaning",
-    "section": "Descriptives",
-    "text": "Descriptives\nThe Neufert 4.0 dataset comprised data from a total of N = 37,174 apartments.\n\n\n\nIn the first step, we excluded flats that were either underground or above 6th floor (n = 2,271), had a total are outside of the 25-200 m2 range (n = 1,094), lacked data on room noise (n = 4) or room sunlight (n = 4), or had a value of zero for either of these two variables (n = 810). As only a small number of flats (n = 387) had more than five rooms, these were also excluded. This resulted in a sample size of N = 32,990 apartments, whose characteristics are shown in Figure 1.\n\n\n\n\n\nFigure 1: Distributions of the main variables of interest after the initial data cleaning."
+    "objectID": "datasets/index.html",
+    "href": "datasets/index.html",
+    "title": "Datasets",
+    "section": "",
+    "text": "Order By\n       Default\n         \n          File Name\n        \n         \n          Modified - Oldest\n        \n         \n          Modified - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\nFile Name\n\n\nModified\n\n\n\n\n\n\nall_flats_clustered.csv\n\n\n10 Feb 2023, 12:04:09\n\n\n\n\napartment_simulations.csv\n\n\n16 Jan 2023, 14:52:50\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "posts/data_cleaning.html#shape-clusters",
-    "href": "posts/data_cleaning.html#shape-clusters",
-    "title": "Data cleaning",
-    "section": "Shape clusters",
-    "text": "Shape clusters\nTo identify clusters that contain apartments of with the same layout, we devised the following algorithm:\nFirst, to account for potential rotation of the apartments, we oriented them along the horizontal (x-axis) and the vertical (y-axis). This was done byt aligning the longest polygon edge within each apartments along the horizontal.\nNext, we converted the vector graphics representation of the apartments to 224×224 black and white raster representation that contained only area geometries (rooms, corridors, shafts, balconies etc. but not walls, columns, doors, or windows). Each such 224×224 matrix contained only values of 0 (black) and 1 (white).\nThese matrices were then used to compare to get a measure of distance between the apartment geometries. The apartments were first grouped according to number of rooms. Within each group, we then selected a random apartment as a reference matrix (\\(\\mathbf{A}\\)) and calculated the sum of squared difference between this reference and all other apartnent matrices (\\(\\mathbf{B}\\)):\n\\[SS = \\sum_{i = 1}^{n}\\sum_{j = 1}^{n}(\\mathbf{B}_{ij} - \\mathbf{A}_{ij})^2\\]\nwhere \\(n\\) = 224, the number of pixels per dimension.\nAfter the initial aligning of the floor plans along the x and y axes, there remained eight possible orientations each floor plan could have (see Figure 2). For this reason, each floor plan matrix was transformed into eight different matrices that reflected these rotattions and only then compared to the reference using the sum of squares measure. This resulted in eight distance values per floor plan, yielding an eight-dimensional difference space, with each floorplan representing a point in this space and the reference flat positioned at its origin.\n\n\n\n\n\nFigure 2: All eight possible orientations of a single aligned apartment representation\n\n\n\n\nIn order to further expand this difference space, we selected another floor plan as reference and repeated this process. This floor plan was chosen from the middle of the distance distributions in the first iteration. Thee resulting 16-dimensional data set was then passed to the Self-Organising Map algorithm (SOM, Kohonen…) with a grid size equal to \\(floor(\\sqrt{n})\\), where \\(n\\) represents the number of floor plans with a given number of rooms. This procedure yielded grid position for each of the analysed floor plans, clustering them according to shape.\nThe above-described algorithm produced a somewhat liberal clusters, occasionally grouping dissimilar floor plans into a single cluster and so a further step was implemented to refine the clustering. Within each of the SOM clusters, we started by designating the first (position was arbitrary) floor plan as the reference and once again calculated the distance between it and the eight orientations of all other floor plans in the same SOM cluster. If the smallest of the eight distance measures was less than an empirically determined threshold of 2,000, the floorplan in question was added to a cluster defined by the reference floor plan. Next, the first of the remaining floor plans that did not pass the threshold was designated a reference for the next cluster and the process repeated. Once all floor plans withing the same SOM cluster were assorted, the algorithm was reiterated on the next SOM cluster.\nWhile the “refinement” algorithm could have been applied to the raw, unclustered data, the benefit of first creating the SOM clusters was a massive reduction of apartment-to-apartment comparisons and thus of computational resources.\nThis procedure yieded 11,173 rotation- and translation-invariant clusters of geometrically identical floor plans. The number of floor plans per cluster ranged from 1 to 96 (see Figure 3).\n\n\n\n\n\nFigure 3: Histogram of the distribution of number of floorplans per cluster"
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome to InfAR @ Bauhaus-Uni Weimar",
+    "section": "",
+    "text": "Notion\nMiro board\nDatasets"
   },
   {
-    "objectID": "posts/data_cleaning.html#filtering-observations",
-    "href": "posts/data_cleaning.html#filtering-observations",
+    "objectID": "index.html#neufert-4.0-links",
+    "href": "index.html#neufert-4.0-links",
+    "title": "Welcome to InfAR @ Bauhaus-Uni Weimar",
+    "section": "",
+    "text": "Notion\nMiro board\nDatasets"
+  },
+  {
+    "objectID": "index.html#documents",
+    "href": "index.html#documents",
+    "title": "Welcome to InfAR @ Bauhaus-Uni Weimar",
+    "section": "Documents",
+    "text": "Documents"
+  },
+  {
+    "objectID": "posts/data_cleaning/index.html",
+    "href": "posts/data_cleaning/index.html",
     "title": "Data cleaning",
-    "section": "Filtering observations",
-    "text": "Filtering observations\nOnce the data was sorted into clusters accodring to the geometry of floor plans, we removed apartments that were deemed as essentially duplicates with respect to the values of average room noise and average room sunlight. These essential duplicates were identified as follows:\nFirst, we discretised the noise variable into categories by 5 dB increments and the sunlight variable by increments of 200 lx. Within each cluste and for each level of noise, we then retained one observation at every given level of the discretised sunlight variable (if available). The retained observation was the one with the lowest score on the original, continuous average room sunlight variable.\nThis further reduced the data set to the final size of n = 20,419 essentially unique apartments."
+    "section": "",
+    "text": "The Neufert 4.0 dataset comprises data from a total of N = 37,174 apartments.\nIn the first step, we excluded flats that were either underground or above 6th floor (n = 2,271), had a total are outside of the 25-200 m2 range (n = 1,094), lacked data on room noise (n = 4) or room sunlight (n = 4), or had a value of zero for either of these two variables (n = 810). As only a small number of flats (n = 387) had more than five rooms, these were also excluded. This resulted in a sample size of N = 32,990 apartments, whose characteristics are shown in Figure 1.\n\n\n\n\n\nFigure 1: Distributions of the main variables of interest after the initial data cleaning."
   },
   {
     "objectID": "posts/data_cleaning/index.html#descriptives",
     "href": "posts/data_cleaning/index.html#descriptives",
     "title": "Data cleaning",
-    "section": "Descriptives",
-    "text": "Descriptives\nThe Neufert 4.0 dataset comprises data from a total of N = 37,174 apartments.\n\n\n\nIn the first step, we excluded flats that were either underground or above 6th floor (n = 2,271), had a total are outside of the 25-200 m2 range (n = 1,094), lacked data on room noise (n = 4) or room sunlight (n = 4), or had a value of zero for either of these two variables (n = 810). As only a small number of flats (n = 387) had more than five rooms, these were also excluded. This resulted in a sample size of N = 32,990 apartments, whose characteristics are shown in Figure 1.\n\n\n\n\n\nFigure 1: Distributions of the main variables of interest after the initial data cleaning."
+    "section": "",
+    "text": "The Neufert 4.0 dataset comprises data from a total of N = 37,174 apartments.\nIn the first step, we excluded flats that were either underground or above 6th floor (n = 2,271), had a total are outside of the 25-200 m2 range (n = 1,094), lacked data on room noise (n = 4) or room sunlight (n = 4), or had a value of zero for either of these two variables (n = 810). As only a small number of flats (n = 387) had more than five rooms, these were also excluded. This resulted in a sample size of N = 32,990 apartments, whose characteristics are shown in Figure 1.\n\n\n\n\n\nFigure 1: Distributions of the main variables of interest after the initial data cleaning."
   },
   {
     "objectID": "posts/data_cleaning/index.html#shape-clusters",
@@ -56,32 +63,95 @@
     "text": "Filtering observations\nOnce the data was sorted into clusters according to the geometry of floor plans, we removed apartments that were deemed as essentially duplicates with respect to the values of average room noise and average room sunlight. These essential duplicates were identified as follows:\nFirst, we discretised the noise variable into categories by 5 dB increments and the sunlight variable by increments of 200 lx. Within each cluster and for each level of noise, we then retained one observation at every given level of the discretised sunlight variable (if available). The retained observation was the one with the lowest score on the original, continuous average room sunlight variable.\nThis further reduced the data set to the final size of n = 20,419 essentially unique apartments."
   },
   {
-    "objectID": "index.html#documents",
-    "href": "index.html#documents",
-    "title": "Welcome to InfAR @ Bauhaus-Uni Weimar",
-    "section": "Documents",
-    "text": "Documents"
+    "objectID": "posts/quarto_workshop/index.html",
+    "href": "posts/quarto_workshop/index.html",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "",
+    "text": "library(reticulate)"
   },
   {
-    "objectID": "data.html",
-    "href": "data.html",
-    "title": "Data",
-    "section": "",
-    "text": "Order By\n       Default\n         \n          File Name\n        \n         \n          Modified - Oldest\n        \n         \n          Modified - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\nFile Name\n\n\nModified\n\n\n\n\n\n\nall_flats_clustered.csv\n\n\n2/10/23, 12:04:09 PM\n\n\n\n\napartment_simulations.csv\n\n\n1/16/23, 2:52:50 PM\n\n\n\n\n\n\nNo matching items"
+    "objectID": "posts/quarto_workshop/index.html#level-2-heading",
+    "href": "posts/quarto_workshop/index.html#level-2-heading",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "1.1 Level 2 heading",
+    "text": "1.1 Level 2 heading\n\n1.1.1 Level 3 heading\n\n1.1.1.1 Level 4 heading\n\n1.1.1.1.1 Level 5 heading\n\n1.1.1.1.1.1 Level 6 heading\nBody text. New lines get ignored. To start a new paragraph, we need 2 new lines.\nThis is now a new paragraph."
   },
   {
-    "objectID": "datasets/index.html",
-    "href": "datasets/index.html",
-    "title": "Datasets",
-    "section": "",
-    "text": "Order By\n       Default\n         \n          File Name\n        \n         \n          Modified - Oldest\n        \n         \n          Modified - Newest\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\nFile Name\n\n\nModified\n\n\n\n\n\n\nall_flats_clustered.csv\n\n\n10 Feb 2023, 12:04:09\n\n\n\n\napartment_simulations.csv\n\n\n16 Jan 2023, 14:52:50\n\n\n\n\n\n\nNo matching items"
+    "objectID": "posts/quarto_workshop/index.html#basic-text-formatting",
+    "href": "posts/quarto_workshop/index.html#basic-text-formatting",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "2.1 Basic text formatting",
+    "text": "2.1 Basic text formatting\n\nItalics (or rather emphasis) is denoted with a single asterisk (*) or underscore(_) around text, like this or this. We can add boldface with double asterisks or underscores, like this or this. In practice, to ease readability of the markdown, I like to use underscores for emphasis and asterisks for boldface but that’s up to you. There’s a little side note to using these markdown special characters, so let’s add a footnote.1\nFor a slightly more exotic formatting, use double tilde (~~) for strikethrough and backticks (`) for monospace font often used for code (watch out, these are not quotes or apostrophes). The particular flavour of markdown used by Quarto also supports superscripts and subscripts.\nFor situations when you want to show a block of code, you can use text offset by four spaces\nThis is a block of monospace text you can use to show code.\nThere are, however better options that we'll talk about later.\nYou can also make use of the built in syntax highlighting (supports over 140 languages) by enclosing your code in a backtick fence:\n\n### Python sample code ###\n\nimport numpy as np\n\n# basic for-loop\nfor i in range(0, 10):\n    print(i)\n/// JavaScript sample code ///\n\n// arrow function (ES6 on)\nconst greet = (name) =&gt; `Hello ${name}`\n\ngreet(\"InfAR\")\n/// C# sample code ///\n\nvar random = new Random();\nint dice = random.Next(1, 7);   // creates a number between 1 and 6 \n\nYou can also use blockquote like this where you can quote an entire paragraph, if you so wish.\n\nTo end these kinds of formatting blocks, just insert a couple of new lines."
+  },
+  {
+    "objectID": "posts/quarto_workshop/index.html#lists",
+    "href": "posts/quarto_workshop/index.html#lists",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "2.2 Lists",
+    "text": "2.2 Lists\nThere are two kinds of lists: unordered (bullet points) and ordered (numbered/lettered).\n\nThis\nis\nan unordered\nlist\n\nsupports multiple\n\nlevels\n\n\n\n\n\nThis\nis\nan ordered list\n\nagain, with levels\n\nunordered and ordered lists can be combined\n\n\n\n\nthis\nis\nalso an ordered list"
+  },
+  {
+    "objectID": "posts/quarto_workshop/index.html#links-and-images",
+    "href": "posts/quarto_workshop/index.html#links-and-images",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "2.3 Links and images",
+    "text": "2.3 Links and images\nIf you want to include hyperlinks in your document, there are a couple of options. First, you can simply write out the URL, such as https://www.quarto.org. A slightly better way is to link the URL to some informative text. To learn more, visit the Quarto documentation page.\n\n\n\nFigure 1: Image caption (optional)\n\n\n\n\n\n\n\n\n\nFigure 2: A Martin\n\n\n\n\n\n\n\nFigure 3: A Metadel\n\n\n\n\n\n\n\nFigure 4: An Olaf\n\n\n\n\n\nFor more options, see the Quatro guide’s section on figures"
+  },
+  {
+    "objectID": "posts/quarto_workshop/index.html#tables",
+    "href": "posts/quarto_workshop/index.html#tables",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "2.4 Tables",
+    "text": "2.4 Tables\n\n\nTable 1: A sample of characters from Lord of the Rings\n\n\nName\nRace\n\n\n\n\nMeriadoc\nHobbit\n\n\nDenethor\nMan\n\n\nGaldriel\nElf (Noldo)\n\n\nSauron\nMaia\n\n\nGrishnákh\nOrc"
+  },
+  {
+    "objectID": "posts/quarto_workshop/index.html#execution-options",
+    "href": "posts/quarto_workshop/index.html#execution-options",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "4.1 Execution options",
+    "text": "4.1 Execution options\nYou can change the way code blocks are treated by specifying execution options. This can be done either globally (for all code blocks) in the document header at the very top or locally within a given code block using the #| to denote options.\nThere are many execution options (see Quarto documentation) so I’ll just demonstrate how they’re used in principle. For instance, if you want the code blocks to be hidden from the rendered document by default while still showing the output of the code, you’d set the echo option to false in the document header like so:\n---\n# other header fields, such as title omitted\nexecute:\n    echo: false\n---\nIf, however, you still want to show a particular block of code in the document, you can turn the echo option on locally:\n```{language}\n#| echo: true\n... your code ...\n```\n\n\n\n\n\n\nNote\n\n\n\nLocal code block options override global ones for a given block!"
+  },
+  {
+    "objectID": "posts/quarto_workshop/index.html#inline-code-only-with-knitr",
+    "href": "posts/quarto_workshop/index.html#inline-code-only-with-knitr",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "4.2 Inline code (only with knitr)",
+    "text": "4.2 Inline code (only with knitr)\nIf you are using knitr to evaluate code2, you can use its inline code chunks (r) to insert the output of your code straight into body text:\nThe line:\nThe result of the code above is `r py$greet('InfAR')`.3\nwill produce:\nThe result of the code above is Hello InfAR."
+  },
+  {
+    "objectID": "posts/quarto_workshop/index.html#tables-and-figures",
+    "href": "posts/quarto_workshop/index.html#tables-and-figures",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "4.3 Tables and figures",
+    "text": "4.3 Tables and figures\nUsing code blocks, it’s very easy to tabulate and plot your data.\nHere is a quick example of a scatterplot in Python. Notice the options in the source document that govern what the figure cation should be and where it should be positioned as well as set the label for the figure that can then be referenced as Figure 5 (see Section 5.1).\n\nimport pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\npenguins_url =  \"https://gist.githubusercontent.com/slopp/ce3b90b9168f2f921784de84fa445651/raw/4ecf3041f0ed4913e7c230758733948bc561f434/penguins.csv\"\ndf = pd.read_csv(penguins_url)\n\nplot = sns.lmplot(x=\"body_mass_g\", y=\"bill_length_mm\",\n                  data=df, fit_reg=True, hue='species', legend=False)\nplt.legend(loc='lower right')\nplt.xlabel('Body mass (g)')\nplt.ylabel('Bill length (mm)')\nplt.show()\n\n\n\n\nFigure 5: Relationship between bill length and body mass by penguin species\n\n\n\n\nAnd here is a nice HTML table using R and its kableExtra package.\n\nlibrary(kableExtra)\nlibrary(dplyr)\n\npenguins_url =  \"https://gist.githubusercontent.com/slopp/ce3b90b9168f2f921784de84fa445651/raw/4ecf3041f0ed4913e7c230758733948bc561f434/penguins.csv\"\nread.csv(penguins_url) |&gt;\n    dplyr::group_by(species) |&gt;\n    dplyr::summarise(\n        m_mass = mean(body_mass_g, na.rm=TRUE),\n        sd_mass = sd(body_mass_g, na.rm=TRUE),\n    ) |&gt;\n    kableExtra::kbl(\n        digits = 2,\n        col.names = c(\"Species\", \"_M_\", \"_SD_\"), # you can even use markdown\n        format = \"markdown\") |&gt;                  # provided you specify format\n    kableExtra::kable_styling(bootstrap_options = \"striped\")\n\n\n\nTable 2: Summary of body mass (g) by penguin species\n\n\nSpecies\nM\nSD\n\n\n\n\nAdelie\n3700.66\n458.57\n\n\nChinstrap\n3733.09\n384.34\n\n\nGentoo\n5076.02\n504.12"
+  },
+  {
+    "objectID": "posts/quarto_workshop/index.html#sec-crossrefs",
+    "href": "posts/quarto_workshop/index.html#sec-crossrefs",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "5.1 Cross-references",
+    "text": "5.1 Cross-references\nYou can refer to a section in your document by adding a section label {#sec-label} to the section heading and then referring to this label with an @sec-label (see Section 5.1). Similarly, you can refer to any images, figures (Figure 4), or tables (Table 1).\n\n\n\n\n\n\nImportant\n\n\n\nThe #sec- for sections, #fig- for figures and images, and #tbl- for tables is required."
+  },
+  {
+    "objectID": "posts/quarto_workshop/index.html#citing-literature",
+    "href": "posts/quarto_workshop/index.html#citing-literature",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "5.2 Citing literature",
+    "text": "5.2 Citing literature\nBielik et al. (2015) say this is fine. That, however, is probably balls (Bielik et al., 2019; Schneider et al., 2012) König, Bielik, and Schneider also say: “oh man, whatever…” (2018, p. 42) Finally, Osintseva and colleagues (2020) went to the pub.\nAll cited sources will automatically be included in the list of references at the bottom of the document."
+  },
+  {
+    "objectID": "posts/quarto_workshop/index.html#footnotes",
+    "href": "posts/quarto_workshop/index.html#footnotes",
+    "title": "Introduction to literate programming with Quarto",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nIf you want to use literal asterisks or underscores that you don’t want to be interpreted as markers of emphasis, you need to “escape” them using a backslash, like this: \\* and \\_. The same goes for all other special characters.↩︎\nThis will happen automatically if the first code block is an R block. You can do this even if you want to code in Python and just use the reticulate package like we did at the top of this document.↩︎\nBecause we are primarily using R here and interfacing with Python via the reticulate package, all objects that are created in Python are stored inside of py. This is why we are calling the greet() function from inside the py object in R using py$greet(). We are doing this because, unfortunately, there is no elegant way in Quarto to print out inline code like this when using Python natively (through the Jupyter engine).↩︎"
   },
   {
     "objectID": "posts/shallow_nn/index.html",
     "href": "posts/shallow_nn/index.html",
     "title": "Shallow neural network exercise",
     "section": "",
-    "text": "Let’s see if I can write a single hidden layer NN that would be able to say if an image of a floor plan shows a one-room apartment or not.\nFirst, load libraries.\nRead in the data:"
+    "text": "Let’s see if I can write a single hidden layer NN that would be able to say if an image of a floor plan shows a one-room apartment or not.\nFirst, load libraries.\nimport pandas as pd\nimport numpy as np\nimport sklearn\nimport cv2\nimport random\nimport matplotlib.pyplot as plt\nimport time\nRead in the data:\ndf = pd.read_csv(\"../../static/data/all_flats_clustered.csv\")"
   },
   {
     "objectID": "posts/shallow_nn/index.html#data-processing",
@@ -98,18 +168,11 @@
     "text": "Model design\n\n\n\nStructure of the neural network. Stolen from Coursera."
   },
   {
-    "objectID": "posts/shallow_nn/index.html#back-propagation",
-    "href": "posts/shallow_nn/index.html#back-propagation",
-    "title": "Shallow neural network exercise",
-    "section": "Back propagation",
-    "text": "Back propagation\nGiven \\(\\mathcal{J}\\) defined above, we need the following derivatives1 to implement the back propagation:\n\n\n\n\n\n\nNote\n\n\n\n\\(\\odot\\) denotes element-wise product.\n\n\n\\[\n\\begin{aligned}\n\\mathcal{J}^\\prime_{Z^{[2]}} &= A^{[2]} - Y \\\\ &= dZ^{[2]}\\\\\n\\mathcal{J}^\\prime_{W^{[2]}} &= \\frac{1}{m}\\mathbf{A}^{[1]\\textsf{T}}dZ^{[2]} \\\\\n\\mathcal{J}^\\prime_{b^{[2]}} &= \\frac{1}{m}\\sum_{i=1}^{m}dZ_i^{[2]} \\\\\n\\mathcal{J}^\\prime_{\\mathbf{Z}^{[1]}} &= dZ^{[2]}\\mathbf{W}^{[2]\\textsf{T}} \\odot g^\\prime(\\mathbf{Z}^{[1]}) \\\\\n&= dZ^{[2]}\\mathbf{W}^{[2]\\textsf{T}} \\odot (1 - \\mathbf{A}^{[1]}\\odot\\mathbf{A}^{[1]}) \\\\\n&= dZ^{[1]} \\\\\n\\mathcal{J}^\\prime_{\\mathbf{W}^{[1]}} &= \\frac{1}{m}\\mathbf{X}^\\textsf{T}dZ^{[1]} \\\\\n\\mathcal{J}^\\prime_{b^{[1]}} &= \\frac{1}{m}\\sum_{i=1}^{m}dZ_{ij}^{[1]}\n\\end{aligned}\n\\]\n\\(g^\\prime(\\mathbf{Z}^{[1]})\\) is the derivative of the activation (link) function in the hidden layer, in this case the \\(\\tanh\\) function. \\(g(\\mathbf{Z}^{[1]}) = \\tanh(\\mathbf{Z}^{[1]}) = \\mathbf{A}^{[1]}\\) and its derivative is \\(1 - \\mathbf{A}^{[1]}\\odot\\mathbf{A}^{[1]}\\).\n\nBP implementation\n\ndef backward(X, Y, params, fwd_steps):\n    m = X.shape[0]\n    A1 = fwd_steps[\"A1\"]\n    A2 = fwd_steps[\"A2\"]\n    W1 = params[\"W1\"]\n    W2 = params[\"W2\"]\n    b1 = params[\"b1\"]\n    b2 = params[\"b2\"]\n\n    dZ2 = A2 - Y\n    dW2 = np.dot(A1.T, dZ2)/m\n    db2 = np.mean(dZ2)\n    dZ1 = np.dot(dZ2, W2.T) * (1 - A1 ** 2)\n    dW1 = np.dot(X.T, dZ1)/m\n    db1 = np.sum(dZ1.T, axis=1, keepdims=True)/m\n\n    # print(db1.shape)\n\n    return {\n        \"dW1\": dW1,\n        \"db1\" : db1,\n        \"dW2\": dW2,\n        \"db2\" : db2,\n    }\n\nOn top of the back propagation function, we also need a function that updates parameters. The one below modifies the object passed to params= in place and doesn’t return anything.\n\ndef update_params(params, grads, learning_rate):\n    params[\"W1\"] -= learning_rate * grads[\"dW1\"]\n    params[\"W2\"] -= learning_rate * grads[\"dW2\"]\n    params[\"b1\"] -= learning_rate * grads[\"db1\"]\n    params[\"b2\"] -= learning_rate * grads[\"db2\"]    \n\n    return"
-  },
-  {
     "objectID": "posts/shallow_nn/index.html#forward-propagation",
     "href": "posts/shallow_nn/index.html#forward-propagation",
     "title": "Shallow neural network exercise",
     "section": "Forward propagation",
-    "text": "Forward propagation\n\n\n\n\n\n\nNote\n\n\n\nI’m following a linear regression convention below as that’s the one I’m most familiar with. In ML literature, you may find the same equation expressed as \\(\\mathbf{Z}^{[1]} = \\mathbf{W}^{[1]\\textsf{T}}\\mathbf{X} + b\\). This is really the same thing and the difference is only due to the fact that the \\(\\mathbf{Z}^{[1]}\\) and \\(\\mathbf{W}^{[1]}\\) matrices here are transposed with respect to those in ML literature.\n\n\n\\[\\mathbf{Z}^{[1]} = \\mathbf{X}\\mathbf{W}^{[1]} + b^{[1]},\\]\nwhere\n\\[\n\\mathbf{X} = \\begin{bmatrix}\n    x_{11} & \\dotsb & x_{1n}\\\\\n    x_{21} & \\dotsb & x_{2n}\\\\\n    \\vdots & \\ddots & \\vdots\\\\\n    x_{m1} & \\dotsb & x_{mn}\n\\end{bmatrix},\n\\]\nis the \\(m\\times n\\) matrix of \\(n\\) features for \\(m\\) training examples (observations).\n\\[\n\\mathbf{W}^{[1]} = \\begin{bmatrix}\n    w_{11} & w_{12} & w_{13} & w_{14}\\\\\n    w_{21} & w_{22} & w_{23} & w_{24}\\\\\n    \\vdots & \\vdots & \\vdots & \\vdots\\\\\n    w_{n1} & w_{n2} & w_{n3} & w_{n4}\n\\end{bmatrix},\n\\]\nis a \\(n\\times 4\\) matrix of weights, with each column representing the weights for one of the four nodes of the hidden layer. Rows contain the regression weights for all of the \\(n\\) features.\n\\[\nb^{[1]} = \\begin{bmatrix}\n    b_1 \\\\\n    b_2 \\\\\n    b_3 \\\\\n    b_4\n\\end{bmatrix}\n\\]\nis a column vector of biases/intercepts.\nThe resulting matrix \\(\\mathbf{Z}^{[1]}\\) is a \\(m\\times 4\\) matrix of outcomes of this linear regression with one column per node of the hidden layer.\n\\[\n\\begin{aligned}\n\\mathbf{A}^{[1]} &= \\tanh(\\mathbf{Z}^{[1]}) \\\\\nZ^{[2]} &= \\mathbf{A}^{[1]}W^{[2]} + b^{[2]} \\\\\n\\hat{Y} &= Z^{[2]} = \\sigma(Z^{[2]}) \\\\\ny^{(i)}_{pred} &= \\begin{cases}\n    1 & \\text{if }\\hat{y}^{(i)} > 0.5 \\\\\n    0 & \\text{otherwise}\n\\end{cases}\n\\end{aligned}\n\\]\nIn the above, \\(\\hat{Y}\\) is a column vector of \\(m\\) predicted probabilities, one for each training example. \\(\\hat{y}^{(i)}\\) and \\(y^{(i)}_{pred}\\) are the predicted probability and the categorical prediction for the \\(i\\)th example, respectively.\n\n\n\n\n\n\nNote\n\n\n\nSince this network has only 2 layers, \\(W^{[2]}\\), \\(Z^{[2]}\\) and \\(A^{[2]}\\) are column vectors, hence the italics.\n\n\n\nFP implementation\n\ndef sigmoid(x):\n    return 1 / (1 + np.exp(-x))\n\ndef tanh(x):\n    return (np.exp(2 * x) - 1) / (np.exp(2 * x) + 1)\n\ndef model_dimensions(data, outcome, n_nodes = 4):\n    # n = number of predictor features\n    # m = n of observations\n    # y_size = n of outcome features\n    n = data.shape[1]\n    m = data.shape[0]\n    y_size = outcome.shape[1]\n\n    return n, m, y_size, n_nodes\n\ndef params_init(n_x_features, n_y_features, n_nodes):\n    W1 = np.random.randn(n_x_features, n_nodes) * .001\n    b1 = np.zeros(n_nodes).reshape(n_nodes, 1)\n    W2 = np.random.randn(n_nodes, 1) * .001\n    b2 = 0\n\n    return {\"W1\": W1, \"b1\": b1, \"W2\": W2, \"b2\": b2}\n\ndef forward(x, params):\n    W1 = params[\"W1\"]\n    b1 = params[\"b1\"]\n    W2 = params[\"W2\"]\n    b2 = params[\"b2\"]\n    \n    Z1 = np.dot(x, params[\"W1\"]) + params[\"b1\"].T\n    A1 = tanh(Z1)\n    Z2 = np.dot(A1, W2) + b2\n    A2 = sigmoid(Z2)\n\n    steps = {\n        \"Z1\": Z1,\n        \"A1\": A1,\n        \"Z2\": Z2,\n        \"A2\": A2\n    }\n\n    return A2, steps"
+    "text": "Forward propagation\n\n\n\n\n\n\nNote\n\n\n\nI’m following a linear regression convention below as that’s the one I’m most familiar with. In ML literature, you may find the same equation expressed as \\(\\mathbf{Z}^{[1]} = \\mathbf{W}^{[1]\\textsf{T}}\\mathbf{X} + b\\). This is really the same thing and the difference is only due to the fact that the \\(\\mathbf{Z}^{[1]}\\) and \\(\\mathbf{W}^{[1]}\\) matrices here are transposed with respect to those in ML literature.\n\n\n\\[\\mathbf{Z}^{[1]} = \\mathbf{X}\\mathbf{W}^{[1]} + b^{[1]},\\]\nwhere\n\\[\n\\mathbf{X} = \\begin{bmatrix}\n    x_{11} & \\dotsb & x_{1n}\\\\\n    x_{21} & \\dotsb & x_{2n}\\\\\n    \\vdots & \\ddots & \\vdots\\\\\n    x_{m1} & \\dotsb & x_{mn}\n\\end{bmatrix},\n\\]\nis the \\(m\\times n\\) matrix of \\(n\\) features for \\(m\\) training examples (observations).\n\\[\n\\mathbf{W}^{[1]} = \\begin{bmatrix}\n    w_{11} & w_{12} & w_{13} & w_{14}\\\\\n    w_{21} & w_{22} & w_{23} & w_{24}\\\\\n    \\vdots & \\vdots & \\vdots & \\vdots\\\\\n    w_{n1} & w_{n2} & w_{n3} & w_{n4}\n\\end{bmatrix},\n\\]\nis a \\(n\\times 4\\) matrix of weights, with each column representing the weights for one of the four nodes of the hidden layer. Rows contain the regression weights for all of the \\(n\\) features.\n\\[\nb^{[1]} = \\begin{bmatrix}\n    b_1 \\\\\n    b_2 \\\\\n    b_3 \\\\\n    b_4\n\\end{bmatrix}\n\\]\nis a column vector of biases/intercepts.\nThe resulting matrix \\(\\mathbf{Z}^{[1]}\\) is a \\(m\\times 4\\) matrix of outcomes of this linear regression with one column per node of the hidden layer.\n\\[\n\\begin{aligned}\n\\mathbf{A}^{[1]} &= \\tanh(\\mathbf{Z}^{[1]}) \\\\\nZ^{[2]} &= \\mathbf{A}^{[1]}W^{[2]} + b^{[2]} \\\\\n\\hat{Y} &= Z^{[2]} = \\sigma(Z^{[2]}) \\\\\ny^{(i)}_{pred} &= \\begin{cases}\n    1 & \\text{if }\\hat{y}^{(i)} &gt; 0.5 \\\\\n    0 & \\text{otherwise}\n\\end{cases}\n\\end{aligned}\n\\]\nIn the above, \\(\\hat{Y}\\) is a column vector of \\(m\\) predicted probabilities, one for each training example. \\(\\hat{y}^{(i)}\\) and \\(y^{(i)}_{pred}\\) are the predicted probability and the categorical prediction for the \\(i\\)th example, respectively.\n\n\n\n\n\n\nNote\n\n\n\nSince this network has only 2 layers, \\(W^{[2]}\\), \\(Z^{[2]}\\) and \\(A^{[2]}\\) are column vectors, hence the italics.\n\n\n\nFP implementation\n\ndef sigmoid(x):\n    return 1 / (1 + np.exp(-x))\n\ndef tanh(x):\n    return (np.exp(2 * x) - 1) / (np.exp(2 * x) + 1)\n\ndef model_dimensions(data, outcome, n_nodes = 4):\n    # n = number of predictor features\n    # m = n of observations\n    # y_size = n of outcome features\n    n = data.shape[1]\n    m = data.shape[0]\n    y_size = outcome.shape[1]\n\n    return n, m, y_size, n_nodes\n\ndef params_init(n_x_features, n_y_features, n_nodes):\n    W1 = np.random.randn(n_x_features, n_nodes) * .001\n    b1 = np.zeros(n_nodes).reshape(n_nodes, 1)\n    W2 = np.random.randn(n_nodes, 1) * .001\n    b2 = 0\n\n    return {\"W1\": W1, \"b1\": b1, \"W2\": W2, \"b2\": b2}\n\ndef forward(x, params):\n    W1 = params[\"W1\"]\n    b1 = params[\"b1\"]\n    W2 = params[\"W2\"]\n    b2 = params[\"b2\"]\n    \n    Z1 = np.dot(x, params[\"W1\"]) + params[\"b1\"].T\n    A1 = tanh(Z1)\n    Z2 = np.dot(A1, W2) + b2\n    A2 = sigmoid(Z2)\n\n    steps = {\n        \"Z1\": Z1,\n        \"A1\": A1,\n        \"Z2\": Z2,\n        \"A2\": A2\n    }\n\n    return A2, steps"
   },
   {
     "objectID": "posts/shallow_nn/index.html#cost-function",
@@ -119,38 +182,31 @@
     "text": "Cost function\nThe loss function of this model for a single example is:\n\\[\n\\mathcal{L}(\\mathbf{W}^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}) = y^{(i)}\\log(\\hat{y}^{(i)}) + (1-y^{(i)})\\log(1-\\hat{y}^{(i)}),\n\\]\nwith the model cost function being the average of all \\(\\mathcal{L}\\), one for each example:\n\\[\n\\mathcal{J} = -\\frac{1}{m}\\sum_{i=0}^{m}\\mathcal{L}_i\n\\]\n\nCost implementation\n\ndef cost(predicted, observed):\n    yhat = predicted\n    m = yhat.shape[0]\n    y = observed\n\n    cost = -np.mean(y * np.log(yhat) + (1 - y) * np.log(1 - yhat))\n\n    return float(np.squeeze(cost))"
   },
   {
-    "objectID": "posts/shallow_nn/index.html#lets-run-it",
-    "href": "posts/shallow_nn/index.html#lets-run-it",
+    "objectID": "posts/shallow_nn/index.html#back-propagation",
+    "href": "posts/shallow_nn/index.html#back-propagation",
     "title": "Shallow neural network exercise",
-    "section": "Let’s run it",
-    "text": "Let’s run it\n\nm1 = nn_model(X_train, Y_train, 10)\n\nCost after iteration 0: 0.693140\n\n\nModel converged after 9 iterations"
-  },
-  {
-    "objectID": "posts/shallow_nn/index.html#predict",
-    "href": "posts/shallow_nn/index.html#predict",
-    "title": "Shallow neural network exercise",
-    "section": "Predict",
-    "text": "Predict\n\ndef predict(X, params):\n    yhat, steps = forward(X, params)\n    return (yhat > .5).astype(int)\n\n\npred = predict(X_test, m1[\"params\"])\n\n\n\nOur simple model correctly classified 64.9% of the floor plans in the test set"
+    "section": "Back propagation",
+    "text": "Back propagation\nGiven \\(\\mathcal{J}\\) defined above, we need the following derivatives1 to implement the back propagation:\n\n\n\n\n\n\nNote\n\n\n\n\\(\\odot\\) denotes element-wise product.\n\n\n\\[\n\\begin{aligned}\n\\mathcal{J}^\\prime_{Z^{[2]}} &= A^{[2]} - Y \\\\ &= dZ^{[2]}\\\\\n\\mathcal{J}^\\prime_{W^{[2]}} &= \\frac{1}{m}\\mathbf{A}^{[1]\\textsf{T}}dZ^{[2]} \\\\\n\\mathcal{J}^\\prime_{b^{[2]}} &= \\frac{1}{m}\\sum_{i=1}^{m}dZ_i^{[2]} \\\\\n\\mathcal{J}^\\prime_{\\mathbf{Z}^{[1]}} &= dZ^{[2]}\\mathbf{W}^{[2]\\textsf{T}} \\odot g^\\prime(\\mathbf{Z}^{[1]}) \\\\\n&= dZ^{[2]}\\mathbf{W}^{[2]\\textsf{T}} \\odot (1 - \\mathbf{A}^{[1]}\\odot\\mathbf{A}^{[1]}) \\\\\n&= dZ^{[1]} \\\\\n\\mathcal{J}^\\prime_{\\mathbf{W}^{[1]}} &= \\frac{1}{m}\\mathbf{X}^\\textsf{T}dZ^{[1]} \\\\\n\\mathcal{J}^\\prime_{b^{[1]}} &= \\frac{1}{m}\\sum_{i=1}^{m}dZ_{ij}^{[1]}\n\\end{aligned}\n\\]\n\\(g^\\prime(\\mathbf{Z}^{[1]})\\) is the derivative of the activation (link) function in the hidden layer, in this case the \\(\\tanh\\) function. \\(g(\\mathbf{Z}^{[1]}) = \\tanh(\\mathbf{Z}^{[1]}) = \\mathbf{A}^{[1]}\\) and its derivative is \\(1 - \\mathbf{A}^{[1]}\\odot\\mathbf{A}^{[1]}\\).\n\nBP implementation\n\ndef backward(X, Y, params, fwd_steps):\n    m = X.shape[0]\n    A1 = fwd_steps[\"A1\"]\n    A2 = fwd_steps[\"A2\"]\n    W1 = params[\"W1\"]\n    W2 = params[\"W2\"]\n    b1 = params[\"b1\"]\n    b2 = params[\"b2\"]\n\n    dZ2 = A2 - Y\n    dW2 = np.dot(A1.T, dZ2)/m\n    db2 = np.mean(dZ2)\n    dZ1 = np.dot(dZ2, W2.T) * (1 - A1 ** 2)\n    dW1 = np.dot(X.T, dZ1)/m\n    db1 = np.sum(dZ1.T, axis=1, keepdims=True)/m\n\n    # print(db1.shape)\n\n    return {\n        \"dW1\": dW1,\n        \"db1\" : db1,\n        \"dW2\": dW2,\n        \"db2\" : db2,\n    }\n\nOn top of the back propagation function, we also need a function that updates parameters. The one below modifies the object passed to params= in place and doesn’t return anything.\n\ndef update_params(params, grads, learning_rate):\n    params[\"W1\"] -= learning_rate * grads[\"dW1\"]\n    params[\"W2\"] -= learning_rate * grads[\"dW2\"]\n    params[\"b1\"] -= learning_rate * grads[\"db1\"]\n    params[\"b2\"] -= learning_rate * grads[\"db2\"]    \n\n    return"
   },
   {
     "objectID": "posts/shallow_nn/index.html#full-model",
     "href": "posts/shallow_nn/index.html#full-model",
     "title": "Shallow neural network exercise",
     "section": "Full model",
-    "text": "Full model\nOK, time to put it all together. I’m also including a tolerance parameter. If the absolute difference between the costs of two consecutive iterations, the model is deemed to have converged and the loop breaks.\nI’m aslo going to implement a variable learning rate…\n\ndef nn_model(X, Y, n_nodes, learning_rate=.2, n_iter=10000, tol=1e-8, seed = None, print_cost=True):\n    start = time.time() # start timer\n    if seed is not None:\n        np.random.seed(seed)\n\n    J = [1] * n_iter\n    all_learning_rates = [0] * n_iter\n    n_falling_cost = 0\n\n    n_x, n_samp, n_y, foo = model_dimensions(X, Y, n_nodes)\n    gradients = {\n        \"dW1\": np.zeros(n_x * n_nodes).reshape(n_x, n_nodes),\n        \"db1\" : np.zeros(n_nodes).reshape(n_nodes, 1),\n        \"dW2\": np.zeros(n_nodes).reshape(n_nodes, 1),\n        \"db2\" : 0,\n    }\n    params = params_init(n_x, n_y, n_nodes)\n\n    for i in range(0, n_iter + 1):\n        if i == n_iter:\n            print(\"Model failed to converge\")\n            break\n        Y_hat, steps = forward(X, params)\n        J[i] = cost(Y_hat, Y)\n        if (J[i] <= J[i - 1]):\n            n_falling_cost += 1\n            if n_falling_cost % 10 == 0:\n                learning_rate *= 1.1\n        else:\n            n_falling_cost = 0\n            learning_rate /= 1.1\n        if i > 0 and abs(J[i - 1] - J[i]) < tol:\n            end = time.time()\n            elapsed = end - start\n            print (f'Model converged in {round(elapsed, 1)} seconds after {i + 1} iterations')\n            break\n        gradients = backward(X, Y, params, steps)\n        update_params(params, gradients, learning_rate)\n        all_learning_rates[i] = learning_rate\n\n        if print_cost and i % 100 == 0:\n            print (f'Cost after iteration {i}: {J[i]}')\n\n    if i == (n_iter):\n        if (tol == 0):\n            print(\"All iterations completed\")\n        else:\n            print(\"Model failed to converge\")   \n\n    Y_pred = (Y_hat > .5).astype(int)\n    acc = float((np.dot(Y.T, Y_pred) + np.dot(1 - Y.T, 1 - Y_pred)) / float(Y.size) * 100)\n\n    return {\"params\": params, \"cost\": J[0:i], \"yhat\": Y_hat, \"prediction\": Y_pred, \"accuracy\": acc, \"alpha\": all_learning_rates[0:i]}\n\nCool, all that’s left to do is run the model on the training set:\n\nm1 = nn_model(\n    X_train, Y_train,\n    n_nodes = 4,\n    learning_rate = .01,\n    n_iter = 10000,\n    tol = 1e-8,\n    print_cost = False)\n\nModel converged in 53.3 seconds after 518 iterations\n\n\nThat was actually way faster than I would have expected…\nLet’s see the cost over iterations as well as how the learning rate developed.\n\nplt.plot(m1[\"cost\"])\nplt.plot(m1[\"alpha\"])"
-  },
-  {
-    "objectID": "posts/shallow_nn/index.html#testing-model",
-    "href": "posts/shallow_nn/index.html#testing-model",
-    "title": "Shallow neural network exercise",
-    "section": "Testing model",
-    "text": "Testing model\nFirst, a quick wrapper function that returns a binary array of predictions: 0 = not a one-room floor plan; 1 = one-room floor plan.\n\ndef predict(X, params):\n    yhat, steps = forward(X, params)\n    return (yhat > .5).astype(int)\n\nNext, we need to use the previously learnt parameters stored in m1 and pass the test dataset to predict().\n\npred = predict(X_test, m1[\"params\"])\n\nFinally, let’s calculate the classification accuracy:\n\nacc = float((np.dot(Y_test.T, pred) + np.dot(1 - Y_test.T, 1 - pred)) / float(Y_test.size) * 100)\n\n\n\nOur simple model correctly classified 64.4% of the floor plans in the test set\n\n\nNot amazing but given that the model only uses raw pixel values of the images, it’s not that bad either."
+    "text": "Full model\nOK, time to put it all together. I’m also including a tolerance parameter. If the absolute difference between the costs of two consecutive iterations, the model is deemed to have converged and the loop breaks.\nI’m aslo going to implement a variable learning rate…\n\ndef nn_model(X, Y, n_nodes, learning_rate=.2, n_iter=10000, tol=1e-8, seed = None, print_cost=True):\n    start = time.time() # start timer\n    if seed is not None:\n        np.random.seed(seed)\n\n    J = [1] * n_iter\n    all_learning_rates = [0] * n_iter\n    n_falling_cost = 0\n\n    n_x, n_samp, n_y, foo = model_dimensions(X, Y, n_nodes)\n    gradients = {\n        \"dW1\": np.zeros(n_x * n_nodes).reshape(n_x, n_nodes),\n        \"db1\" : np.zeros(n_nodes).reshape(n_nodes, 1),\n        \"dW2\": np.zeros(n_nodes).reshape(n_nodes, 1),\n        \"db2\" : 0,\n    }\n    params = params_init(n_x, n_y, n_nodes)\n\n    for i in range(0, n_iter + 1):\n        if i == n_iter:\n            print(\"Model failed to converge\")\n            break\n        Y_hat, steps = forward(X, params)\n        J[i] = cost(Y_hat, Y)\n        if (J[i] &lt;= J[i - 1]):\n            n_falling_cost += 1\n            if n_falling_cost % 10 == 0:\n                learning_rate *= 1.1\n        else:\n            n_falling_cost = 0\n            learning_rate /= 1.1\n        if i &gt; 0 and abs(J[i - 1] - J[i]) &lt; tol:\n            end = time.time()\n            elapsed = end - start\n            print (f'Model converged in {round(elapsed, 1)} seconds after {i + 1} iterations')\n            break\n        gradients = backward(X, Y, params, steps)\n        update_params(params, gradients, learning_rate)\n        all_learning_rates[i] = learning_rate\n\n        if print_cost and i % 100 == 0:\n            print (f'Cost after iteration {i}: {J[i]}')\n\n    if i == (n_iter):\n        if (tol == 0):\n            print(\"All iterations completed\")\n        else:\n            print(\"Model failed to converge\")   \n\n    Y_pred = (Y_hat &gt; .5).astype(int)\n    acc = float((np.dot(Y.T, Y_pred) + np.dot(1 - Y.T, 1 - Y_pred)) / float(Y.size) * 100)\n\n    return {\"params\": params, \"cost\": J[0:i], \"yhat\": Y_hat, \"prediction\": Y_pred, \"accuracy\": acc, \"alpha\": all_learning_rates[0:i]}\n\nCool, all that’s left to do is run the model on the training set:\n\nm1 = nn_model(\n    X_train, Y_train,\n    n_nodes = 4,\n    learning_rate = .01,\n    n_iter = 10000,\n    tol = 1e-8,\n    print_cost = False)\n\nModel converged in 53.3 seconds after 518 iterations\n\n\nThat was actually way faster than I would have expected…\nLet’s see the cost over iterations as well as how the learning rate developed.\n\nplt.plot(m1[\"cost\"])\nplt.plot(m1[\"alpha\"])"
   },
   {
     "objectID": "posts/shallow_nn/index.html#testing-the-model",
     "href": "posts/shallow_nn/index.html#testing-the-model",
     "title": "Shallow neural network exercise",
     "section": "Testing the model",
-    "text": "Testing the model\nFirst, a quick wrapper function that returns a binary array of predictions: 0 = not a one-room floor plan; 1 = one-room floor plan.\n\ndef predict(X, params):\n    yhat, steps = forward(X, params)\n    return (yhat > .5).astype(int)\n\nNext, we need to use the previously learnt parameters stored in m1 and pass the test dataset to predict().\n\npred = predict(X_test, m1[\"params\"])\n\nFinally, let’s calculate the classification accuracy:\n\nacc_test = float((np.dot(Y_test.T, pred) + np.dot(1 - Y_test.T, 1 - pred)) / float(Y_test.size) * 100)\n\n\n\n\nOur simple model correctly classified 79.3% of the floor plans in the training set and 80.1% of the floor plans in the test set.\nNot amazing but given that the model only uses raw pixel values of the images, it’s not that bad either."
+    "text": "Testing the model\nFirst, a quick wrapper function that returns a binary array of predictions: 0 = not a one-room floor plan; 1 = one-room floor plan.\n\ndef predict(X, params):\n    yhat, steps = forward(X, params)\n    return (yhat &gt; .5).astype(int)\n\nNext, we need to use the previously learnt parameters stored in m1 and pass the test dataset to predict().\n\npred = predict(X_test, m1[\"params\"])\n\nFinally, let’s calculate the classification accuracy:\n\nacc_test = float((np.dot(Y_test.T, pred) + np.dot(1 - Y_test.T, 1 - pred)) / float(Y_test.size) * 100)\n\nOur simple model correctly classified 79.3% of the floor plans in the training set and 80.1% of the floor plans in the test set.\nNot amazing but given that the model only uses raw pixel values of the images, it’s not that bad either."
+  },
+  {
+    "objectID": "posts/shallow_nn/index.html#footnotes",
+    "href": "posts/shallow_nn/index.html#footnotes",
+    "title": "Shallow neural network exercise",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nI am really not sure if the terminology and notation are technically correct. The equations below represent the individual steps for the back propagation simultaneously over all examples. The outputs of the individual steps range from scalar to matrix. Whether or not “derivative” is the appropriate term, I don’t know. I’m just a dumdum ¯\\_(ツ)_/¯↩︎"
   }
 ]
