@@ -2,9 +2,10 @@
 title: "Introduction to literate programming with Quarto"
 subtitle: "InfAR workshop"
 author: Milan
-date: 2023-04-27
+date: "4/27/2023"
 date-format: "D MMM YYYY"
 categories: [workshop]
+image: "https://miro.medium.com/v2/resize:fit:276/1*BKv7Ak1uR9e_J0ZXaZpxOw.png"
 toc: true # should there be a table of contents?
 number-sections: true # should section headings be numbered?
 bibliography: references.bib # file with cited literature entries
