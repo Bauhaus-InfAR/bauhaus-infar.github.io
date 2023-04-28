@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.333">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Milan">
+<meta name="dcterms.date" content="2023-04-27">
+
+<title>InfAR - Introduction to literate programming with Quarto</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">InfAR</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Bauhaus-InfAR" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#level-1-heading" id="toc-level-1-heading" class="nav-link active" data-scroll-target="#level-1-heading"><span class="header-section-number">1</span> Level 1 heading</a>
+  <ul class="collapse">
+  <li><a href="#level-2-heading" id="toc-level-2-heading" class="nav-link" data-scroll-target="#level-2-heading"><span class="header-section-number">1.1</span> Level 2 heading</a>
+  <ul class="collapse">
+  <li><a href="#level-3-heading" id="toc-level-3-heading" class="nav-link" data-scroll-target="#level-3-heading"><span class="header-section-number">1.1.1</span> Level 3 heading</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#markdown" id="toc-markdown" class="nav-link" data-scroll-target="#markdown"><span class="header-section-number">2</span> Markdown</a>
+  <ul class="collapse">
+  <li><a href="#basic-text-formatting" id="toc-basic-text-formatting" class="nav-link" data-scroll-target="#basic-text-formatting"><span class="header-section-number">2.1</span> Basic text formatting</a></li>
+  <li><a href="#lists" id="toc-lists" class="nav-link" data-scroll-target="#lists"><span class="header-section-number">2.2</span> Lists</a></li>
+  <li><a href="#links-and-images" id="toc-links-and-images" class="nav-link" data-scroll-target="#links-and-images"><span class="header-section-number">2.3</span> Links and images</a></li>
+  <li><a href="#tables" id="toc-tables" class="nav-link" data-scroll-target="#tables"><span class="header-section-number">2.4</span> Tables</a></li>
+  </ul></li>
+  <li><a href="#maths" id="toc-maths" class="nav-link" data-scroll-target="#maths"><span class="header-section-number">3</span> Maths</a></li>
+  <li><a href="#sec-eval" id="toc-sec-eval" class="nav-link" data-scroll-target="#sec-eval"><span class="header-section-number">4</span> Code evaluation</a>
+  <ul class="collapse">
+  <li><a href="#execution-options" id="toc-execution-options" class="nav-link" data-scroll-target="#execution-options"><span class="header-section-number">4.1</span> Execution options</a></li>
+  <li><a href="#inline-code-only-with-knitr" id="toc-inline-code-only-with-knitr" class="nav-link" data-scroll-target="#inline-code-only-with-knitr"><span class="header-section-number">4.2</span> Inline code (only with <code>knitr</code>)</a></li>
+  <li><a href="#tables-and-figures" id="toc-tables-and-figures" class="nav-link" data-scroll-target="#tables-and-figures"><span class="header-section-number">4.3</span> Tables and figures</a></li>
+  </ul></li>
+  <li><a href="#academic-writing" id="toc-academic-writing" class="nav-link" data-scroll-target="#academic-writing"><span class="header-section-number">5</span> Academic writing</a>
+  <ul class="collapse">
+  <li><a href="#sec-crossrefs" id="toc-sec-crossrefs" class="nav-link" data-scroll-target="#sec-crossrefs"><span class="header-section-number">5.1</span> Cross-references</a></li>
+  <li><a href="#citing-literature" id="toc-citing-literature" class="nav-link" data-scroll-target="#citing-literature"><span class="header-section-number">5.2</span> Citing literature</a></li>
+  </ul></li>
+  <li><a href="#post-script" id="toc-post-script" class="nav-link" data-scroll-target="#post-script"><span class="header-section-number">6</span> Post script</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Bauhaus-InfAR/bauhaus-infar.github.io/edit/main/posts/quarto_workshop/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/Bauhaus-InfAR/bauhaus-infar.github.io/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Introduction to literate programming with Quarto</h1>
+<p class="subtitle lead">InfAR workshop</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">workshop</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Milan </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">27 Apr 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reticulate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The above is a code block that contains <code>R</code> code that will be evaluated when the document is rendered</p>
+<p>The <code>reticulate</code> package allows us to use Python even though the document will be rendered using the <code>R</code> package <code>knitr</code>. This is so that we can then use <code>knitr</code>’s inline code evaluation (see the <a href="#sec-eval">Code evaluation section</a> below)</p>
+</div>
+</div>
+<section id="level-1-heading" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Level 1 heading</h1>
+<section id="level-2-heading" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="level-2-heading"><span class="header-section-number">1.1</span> Level 2 heading</h2>
+<section id="level-3-heading" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="level-3-heading"><span class="header-section-number">1.1.1</span> Level 3 heading</h3>
+<section id="level-4-heading" class="level4" data-number="1.1.1.1">
+<h4 data-number="1.1.1.1" class="anchored" data-anchor-id="level-4-heading"><span class="header-section-number">1.1.1.1</span> Level 4 heading</h4>
+<section id="level-5-heading" class="level5" data-number="1.1.1.1.1">
+<h5 data-number="1.1.1.1.1" class="anchored" data-anchor-id="level-5-heading"><span class="header-section-number">1.1.1.1.1</span> Level 5 heading</h5>
+<section id="level-6-heading" class="level6" data-number="1.1.1.1.1.1">
+<h6 data-number="1.1.1.1.1.1" class="anchored" data-anchor-id="level-6-heading"><span class="header-section-number">1.1.1.1.1.1</span> Level 6 heading</h6>
+<p>Body text. New lines get ignored. To start a new paragraph, we need 2 new lines.</p>
+<p>This is now a new paragraph.</p>
+</section>
+</section>
+</section>
+</section>
+</section>
+</section>
+<section id="markdown" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Markdown</h1>
+<section id="basic-text-formatting" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="basic-text-formatting"><span class="header-section-number">2.1</span> Basic text formatting</h2>
+<!-- This is a comment. It gets ignored when rendering the document. -->
+<p>Italics (or rather emphasis) is denoted with a single asterisk (*) or underscore(_) around text, like <em>this</em> or <em>this</em>. We can add boldface with double asterisks or underscores, like <strong>this</strong> or <strong>this</strong>. In practice, to ease readability of the markdown, I like to use underscores for <em>emphasis</em> and asterisks for <strong>boldface</strong> but that’s up to you. There’s a little side note to using these markdown special characters, so let’s add a footnote.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>For a slightly more exotic formatting, use double tilde (~~) for <del>strikethrough</del> and backticks (`) for <code>monospace font</code> often used for code (watch out, these are not quotes or apostrophes). The particular flavour of markdown used by Quarto also supports <sup>superscripts</sup> and <sub>subscripts</sub>.</p>
+<p>For situations when you want to show a block of code, you can use text offset by four spaces</p>
+<pre><code>This is a block of monospace text you can use to show code.
+There are, however better options that we'll talk about later.</code></pre>
+<p>You can also make use of the built in syntax highlighting (supports over 140 languages) by enclosing your code in a backtick fence:</p>
+<!-- the python tells the rendered what language the code is supposed to be so that it highlights it accordingly -->
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">### Python sample code </span><span class="al">###</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># basic for-loop</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">10</span>):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(i)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// JavaScript sample code ///</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">// arrow function (ES6 on)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> greet <span class="op">=</span> (name) <span class="kw">=&gt;</span> <span class="vs">`Hello </span><span class="sc">${</span>name<span class="sc">}</span><span class="vs">`</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">greet</span>(<span class="st">"InfAR"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cs code-with-copy"><code class="sourceCode cs"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// C# sample code ///</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> random <span class="op">=</span> <span class="kw">new</span> <span class="fu">Random</span><span class="op">();</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> dice <span class="op">=</span> random<span class="op">.</span><span class="fu">Next</span><span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="dv">7</span><span class="op">);</span>   <span class="co">// creates a number between 1 and 6 </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<blockquote class="blockquote">
+<p>You can also use blockquote like this where you can quote an entire paragraph, if you so wish.</p>
+</blockquote>
+<p>To end these kinds of formatting blocks, just insert a couple of new lines.</p>
+</section>
+<section id="lists" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="lists"><span class="header-section-number">2.2</span> Lists</h2>
+<p>There are two kinds of lists: unordered (bullet points) and ordered (numbered/lettered).</p>
+<ul>
+<li>This</li>
+<li>is</li>
+<li>an unordered</li>
+<li>list
+<ul>
+<li>supports multiple
+<ul>
+<li>levels</li>
+</ul></li>
+</ul></li>
+</ul>
+<!-- Just put 1s everywhere, the rendered will take care of the actual numbering -->
+<ol type="1">
+<li>This</li>
+<li>is</li>
+<li>an ordered list
+<ol type="1">
+<li>again, with levels
+<ul>
+<li>unordered and ordered lists can be combined</li>
+</ul></li>
+</ol></li>
+</ol>
+<ol type="a">
+<li>this</li>
+<li>is</li>
+<li>also an ordered list</li>
+</ol>
+</section>
+<section id="links-and-images" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="links-and-images"><span class="header-section-number">2.3</span> Links and images</h2>
+<p>If you want to include hyperlinks in your document, there are a couple of options. First, you can simply write out the URL, such as https://www.quarto.org. A slightly better way is to link the URL to some informative text. To learn more, visit the <a href="https://www.quarto.org">Quarto documentation page</a>.</p>
+<div id="fig-sven" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="img/sven.jpg" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Figure&nbsp;1: Image caption (optional)</figcaption>
+</figure>
+</div>
+<!-- content within the ::: fence will have a 3-column layout -->
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div id="fig-martin" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="img/martin.jpg" class="img-fluid figure-img" width="200"></p>
+<figcaption class="figure-caption">Figure&nbsp;2: A Martin</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div id="fig-metadel" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="img/metadel.jpg" class="img-fluid figure-img" width="200"></p>
+<figcaption class="figure-caption">Figure&nbsp;3: A Metadel</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div id="fig-olaf" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="img/olaf.jpg" class="img-fluid figure-img" width="200"></p>
+<figcaption class="figure-caption">Figure&nbsp;4: An Olaf</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>For more options, see the Quatro guide’s <a href="https://quarto.org/docs/authoring/figures.html">section on figures</a></p>
+</section>
+<section id="tables" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="tables"><span class="header-section-number">2.4</span> Tables</h2>
+<div id="tbl-lotr" class="anchored">
+<table class="table">
+<caption>Table&nbsp;1: A sample of characters from Lord of the Rings</caption>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Race</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Meriadoc</td>
+<td>Hobbit</td>
+</tr>
+<tr class="even">
+<td>Denethor</td>
+<td>Man</td>
+</tr>
+<tr class="odd">
+<td>Galdriel</td>
+<td>Elf (Noldo)</td>
+</tr>
+<tr class="even">
+<td>Sauron</td>
+<td>Maia</td>
+</tr>
+<tr class="odd">
+<td>Grishnákh</td>
+<td>Orc</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- The above is table caption -->
+</section>
+</section>
+<section id="maths" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Maths</h1>
+<!-- This is just a little bit of CSS (the scripting language that governs styling in HTML documents) that styles the LaTeX logo below. It is only relevant for HTML output and will be ignored when rendered as PDF or DOCX. -->
+<style>
+    .latex {
+        font-family: "Times New Roman";
+        font-weight: bold;
+    }
+
+    .latex sub {
+      margin-left: -0.1667em;
+      margin-right: -0.125em;
+      font-size: 1em;
+    }
+
+    .latex sup {
+      font-size: 0.85em;
+      vertical-align: -.35em;
+      margin-left: -0.36em;
+      margin-right: -0.15em;
+    }
+</style>
+<!-- This is a version of the paragraph for HTML and DOCX and is hidden for PDF -->
+<p>By default, Quarto uses MathJax a maths rendering engine similar to <span class="latex">L<sup>A</sup>T<sub>E</sub>X</span> math mode (for those familiar).</p>
+<!-- This shows ONLY in PDF output -->
+<p>Maths is indicated by a <code>$</code> (inline) or <code>$$</code> (block) fence. For instance, <code>$\sum x_i - \bar{x}$</code> will be rendered as <span class="math inline">\(\sum x_i - \bar{x}\)</span>, while</p>
+<!-- This is a source code block so the maths inside isn't getting interpreted/rendered -->
+<pre><code>$$x = \frac{-b\pm\sqrt{\Delta}}{2a}$$
+$$\Delta = b^2 - 4ac$$</code></pre>
+<p>produces blocked maths:</p>
+<p><span class="math display">\[x = \frac{-b\pm\sqrt{\Delta}}{2a}\]</span> <span class="math display">\[\Delta = b^2 - 4ac\]</span></p>
+<p>To align multi-line maths at arbitrary points, use the <code>aligned</code> environment, <code>\\</code> for new line, and the <code>&amp;</code> alignment marker:</p>
+<pre><code>$$
+\begin{aligned}
+\sigma &amp;= \sqrt{ \frac{ \sum_{ i = 0 }^n(x_i - \bar{x})^2}{n-1}} \\
+&amp; = \sqrt{\sigma^2}
+\end{aligned}
+$$</code></pre>
+<p><span class="math display">\[
+\begin{aligned}
+\sigma &amp;= \sqrt{ \frac{ \sum_{ i = 0 }^n(x_i - \bar{x})^2}{n-1}} \\
+&amp; = \sqrt{\sigma^2}
+\end{aligned}
+\]</span></p>
+<p>You can go much more complex than that…</p>
+<pre><code>$$
+\begin{aligned}
+\mathrm{E}(s^2) &amp;= \mathrm{E}\Bigg(\sum_{i=1}^n\frac{(x_i - \bar{x})^2}{n-1}\Bigg)\\
+&amp;= \frac{1}{n-1}\mathrm{E}\Bigg(\sum_{i=1}^nx_i^2 - n\bar{x}^2\Bigg)\\
+&amp;= \frac{1}{n-1}\Bigg[\sum_{i=1}^n\mathrm{E}\big(x_i^2\big) - n\mathrm{E}\big(\bar{x}^2\big)\Bigg]\\
+&amp;= \frac{1}{n-1}\Bigg[\sum_{i=1}^n\Big\{\mathrm{Var}(\bar{x})+\big[\mathrm{E}(x_i)\big]^2\Big\} - n\Big\{\mathrm{Var}(\bar{x})+\big[\mathrm{E}(\bar{x})\big]^2\Big\}\Bigg]\\
+\end{aligned}
+$$</code></pre>
+<p><span class="math display">\[
+\begin{aligned}
+\mathrm{E}(s^2) &amp;= \mathrm{E}\Bigg(\sum_{i=1}^n\frac{(x_i - \bar{x})^2}{n-1}\Bigg)\\
+&amp;= \frac{1}{n-1}\mathrm{E}\Bigg(\sum_{i=1}^nx_i^2 - n\bar{x}^2\Bigg)\\
+&amp;= \frac{1}{n-1}\Bigg[\sum_{i=1}^n\mathrm{E}\big(x_i^2\big) - n\mathrm{E}\big(\bar{x}^2\big)\Bigg]\\
+&amp;= \frac{1}{n-1}\Bigg[\sum_{i=1}^n\Big\{\mathrm{Var}(\bar{x})+\big[\mathrm{E}(x_i)\big]^2\Big\} - n\Big\{\mathrm{Var}(\bar{x})+\big[\mathrm{E}(\bar{x})\big]^2\Big\}\Bigg]\\
+\end{aligned}
+\]</span></p>
+</section>
+<section id="sec-eval" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Code evaluation</h1>
+<p>The real power of Quarto lies in the integration of the markdown-powered text editor and code evaluation.</p>
+<p>You can easily include blocks of actual <code>R</code>, Python, Julia, or Observable JS code that will get evaluated before the document gets rendered. To do that, use a code fence with the following syntax:</p>
+<!--  The double braces {{}} mean that the code block gets printed out literally and not evaluated. The language used should only be wrapped in a single set of braces, see below -->
+<div class="sourceCode" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{language}</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="in">code</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>So, if you’re writing in Python, we need:</p>
+<!-- The "echo: fenced" option below is only used for demonstration purposes and should otherwise not be used -->
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> greet(whom):</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f'Hello </span><span class="sc">{</span>whom<span class="sc">}</span><span class="ss">'</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>greet(<span class="st">"InfAR"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'Hello InfAR'</code></pre>
+</div>
+</div>
+<p>As you can see in the rendered document, the code got evaluated and its output inserted under the code block.</p>
+<section id="execution-options" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="execution-options"><span class="header-section-number">4.1</span> Execution options</h2>
+<p>You can change the way code blocks are treated by specifying execution options. This can be done either <em>globally</em> (for all code blocks) in the document header at the very top or <em>locally</em> within a given code block using the <code>#|</code> to denote options.</p>
+<p>There are many execution options (see <a href="https://quarto.org/docs/computations/execution-options.html">Quarto documentation</a>) so I’ll just demonstrate how they’re used in principle. For instance, if you want the code blocks to be hidden from the rendered document by default while still showing the output of the code, you’d set the <code>echo</code> option to <code>false</code> in the document header like so:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># other header fields, such as title omitted</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">execute</span><span class="kw">:</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">echo</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If, however, you still want to show a particular block of code in the document, you can turn the <code>echo</code> option on locally:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{language}</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="in">#| echo: true</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="in">... your code ...</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Local code block options override global ones for a given block!</p>
+</div>
+</div>
+</section>
+<section id="inline-code-only-with-knitr" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="inline-code-only-with-knitr"><span class="header-section-number">4.2</span> Inline code (only with <code>knitr</code>)</h2>
+<p>If you are using <code>knitr</code> to evaluate code<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, you can use its inline code chunks (<code>r</code>) to insert the output of your code straight into body text:</p>
+<p>The line:</p>
+<p><code>The result of the code above is `r py$greet('InfAR')`</code>.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>will produce:</p>
+<p>The result of the code above is Hello InfAR.</p>
+</section>
+<section id="tables-and-figures" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="tables-and-figures"><span class="header-section-number">4.3</span> Tables and figures</h2>
+<p>Using code blocks, it’s very easy to tabulate and plot your data.</p>
+<p>Here is a quick example of a scatterplot in Python. Notice the options in the source document that govern what the figure cation should be and where it should be positioned as well as set the label for the figure that can then be referenced as <a href="#fig-peng">Figure&nbsp;5</a> (see <a href="#sec-crossrefs">Section&nbsp;5.1</a>).</p>
+<div class="cell fig-cap-location-bottom">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>penguins_url <span class="op">=</span>  <span class="st">"https://gist.githubusercontent.com/slopp/ce3b90b9168f2f921784de84fa445651/raw/4ecf3041f0ed4913e7c230758733948bc561f434/penguins.csv"</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(penguins_url)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> sns.lmplot(x<span class="op">=</span><span class="st">"body_mass_g"</span>, y<span class="op">=</span><span class="st">"bill_length_mm"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                  data<span class="op">=</span>df, fit_reg<span class="op">=</span><span class="va">True</span>, hue<span class="op">=</span><span class="st">'species'</span>, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'lower right'</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Body mass (g)'</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Bill length (mm)'</span>)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-peng" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="index_files/figure-html/fig-peng-1.png" class="img-fluid figure-img" width="480"></p>
+<figcaption class="figure-caption">Figure&nbsp;5: Relationship between bill length and body mass by penguin species</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>And here is a nice HTML table using <code>R</code> and its <code>kableExtra</code> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>penguins_url <span class="ot">=</span>  <span class="st">"https://gist.githubusercontent.com/slopp/ce3b90b9168f2f921784de84fa445651/raw/4ecf3041f0ed4913e7c230758733948bc561f434/penguins.csv"</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">read.csv</span>(penguins_url) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">group_by</span>(species) <span class="sc">|&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">m_mass =</span> <span class="fu">mean</span>(body_mass_g, <span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">sd_mass =</span> <span class="fu">sd</span>(body_mass_g, <span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    kableExtra<span class="sc">::</span><span class="fu">kbl</span>(</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">digits =</span> <span class="dv">2</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Species"</span>, <span class="st">"_M_"</span>, <span class="st">"_SD_"</span>), <span class="co"># you can even use markdown</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">format =</span> <span class="st">"markdown"</span>) <span class="sc">|&gt;</span>                  <span class="co"># provided you specify format</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="st">"striped"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="tbl-peng" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Table&nbsp;2: Summary of body mass (g) by penguin species</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Species</th>
+<th style="text-align: right;"><em>M</em></th>
+<th style="text-align: right;"><em>SD</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Adelie</td>
+<td style="text-align: right;">3700.66</td>
+<td style="text-align: right;">458.57</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Chinstrap</td>
+<td style="text-align: right;">3733.09</td>
+<td style="text-align: right;">384.34</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gentoo</td>
+<td style="text-align: right;">5076.02</td>
+<td style="text-align: right;">504.12</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="academic-writing" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Academic writing</h1>
+<section id="sec-crossrefs" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="sec-crossrefs"><span class="header-section-number">5.1</span> Cross-references</h2>
+<p>You can refer to a section in your document by adding a section label <code>{#sec-label}</code> to the section heading and then referring to this label with an <code>@sec-label</code> (see <a href="#sec-crossrefs">Section&nbsp;5.1</a>). Similarly, you can refer to any images, figures (<a href="#fig-olaf">Figure&nbsp;4</a>), or tables (<a href="#tbl-lotr">Table&nbsp;1</a>).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>#sec-</code> for sections, <code>#fig-</code> for figures and images, and <code>#tbl-</code> for tables is required.</p>
+</div>
+</div>
+</section>
+<section id="citing-literature" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="citing-literature"><span class="header-section-number">5.2</span> Citing literature</h2>
+<p><span class="citation" data-cites="bielikInvestigatingEffectUrban2015">Bielik et al. (<a href="#ref-bielikInvestigatingEffectUrban2015" role="doc-biblioref">2015</a>)</span> say this is fine. That, however, is probably balls <span class="citation" data-cites="schneiderParametricExplorationSpatial2012 bielikEvolvingConfigurationalProperties2019">(<a href="#ref-bielikEvolvingConfigurationalProperties2019" role="doc-biblioref">Bielik et al., 2019</a>; <a href="#ref-schneiderParametricExplorationSpatial2012" role="doc-biblioref">Schneider et al., 2012</a>)</span> König, Bielik, and Schneider also say: “oh man, whatever…” <span class="citation" data-cites="koenigSystemDynamicsModeling2018">(<a href="#ref-koenigSystemDynamicsModeling2018" role="doc-biblioref">2018, p. 42</a>)</span> Finally, Osintseva and colleagues <span class="citation" data-cites="osintsevaAutomatedParametricBuilding2020">(<a href="#ref-osintsevaAutomatedParametricBuilding2020" role="doc-biblioref">2020</a>)</span> went to the pub.</p>
+<p>All cited sources will automatically be included in the list of references at the bottom of the document.</p>
+</section>
+</section>
+<section id="post-script" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Post script</h1>
+<p>This was just a small taster covering the very basics of what you can do with Quarto. For a deeper dive, I strongly encourage you to check out the <a href="https://quarto.org/docs/guide/">documentation</a>!</p>
+</section>
+<section id="references" class="level1 unnumbered">
+
+
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-line-spacing="2" role="list">
+<div id="ref-bielikEvolvingConfigurationalProperties2019" class="csl-entry" role="listitem">
+Bielik, M., Koenig, R., Fuchkina, E., Schneider, S., &amp; Abdulmawla, A. (2019). Evolving <span>Configurational Properties</span>: <span>Simulating</span> multiplier effects between land use and movement patterns. <em>Proceedings of the 12th <span>International Space Syntax Symposium</span></em>, 279.
+</div>
+<div id="ref-bielikInvestigatingEffectUrban2015" class="csl-entry" role="listitem">
+Bielik, M., Schneider, S., Kuliga, S., Valášek, M., &amp; Donath, D. (2015). Investigating the effect of urban form on the environmental appraisal of streetscapes. <em>Proceedings of the 10th <span>International Space Syntax Symposium</span>, <span>London</span>, <span>UK</span></em>, 13–17.
+</div>
+<div id="ref-koenigSystemDynamicsModeling2018" class="csl-entry" role="listitem">
+Koenig, R., Bielik, M., &amp; Schneider, S. (2018). System dynamics for modeling metabolism mechanisms for urban planning. <em>Proceedings of the <span>Symposium</span> on <span>Simulation</span> for <span>Architecture</span> and <span>Urban Design</span></em>, 1–8.
+</div>
+<div id="ref-osintsevaAutomatedParametricBuilding2020" class="csl-entry" role="listitem">
+Osintseva, I., Koenig, R., Berst, A., Bielik, M., &amp; Schneider, S. (2020). Automated parametric building volume generation: A case study for urban blocks. <em>Proceedings of the 11th <span>Annual Symposium</span> on <span>Simulation</span> for <span>Architecture</span> and <span>Urban Design</span></em>, 1–8.
+</div>
+<div id="ref-schneiderParametricExplorationSpatial2012" class="csl-entry" role="listitem">
+Schneider, S., Bielik, M., &amp; König, R. (2012). The parametric exploration of spatial properties: Coupling parametric geometry modeling and the graph-based spatial analysis of urban street networks. <em>Proceedings of the 2012 <span>Symposium</span> on <span>Simulation</span> for <span>Architecture</span> and <span>Urban Design</span></em>, 1–7.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>If you want to use <em>literal</em> asterisks or underscores that you don’t want to be interpreted as markers of emphasis, you need to <em>“escape”</em> them using a backslash, like this: <code>\*</code> and <code>\_</code>. The same goes for all other special characters.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>This will happen automatically if the first code block is an <code>R</code> block. You can do this even if you want to code in Python and just use the <code>reticulate</code> package like we did at the top of this document.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Because we are primarily using <code>R</code> here and interfacing with Python via the <code>reticulate</code> package, all objects that are created in Python are stored inside of <code>py</code>. This is why we are calling the <code>greet()</code> function from inside the <code>py</code> object in <code>R</code> using <code>py$greet()</code>. We are doing this because, unfortunately, there is no elegant way in Quarto to print out inline code like this when using Python natively (through the Jupyter engine).<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">© 2023 Milan Valášek</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+</body></html>
