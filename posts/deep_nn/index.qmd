@@ -77,7 +77,6 @@ X_test = all_data[~mask]
 Y_test = df[~mask]
 ```
 
-
 In this post, I follow up on the [previous exercise](../shallow_nn/) and turn the shallow NN into a deep one by expanding the number of hidden layers to and arbitrary number.
 
 I am using the same data as before, following the same cleaning procedure.
@@ -90,23 +89,23 @@ I am using the same data as before, following the same cleaning procedure.
 
 Going back to the shallow NN, there were a few matrices/vectors in the forward propagation:
 
-- $\mathbf{X}$: a $m\times j$ matrix of $j$ features/variables per $m$ examples/observations
-- $\mathbf{W^{[1]}}$: a $n^{[1]}\times j$ matrix, where $n^{[1]}$ is the number of nodes in the 1^st^ layer ($L^{[1]}$)
-- $b^{[1]}$: a $n^{[1]}$-dimensional column vector of biases/intercepts of $L^{[1]}$
-- a $\mathbf{Z^{[1]}}$: a $m\times n^{[1]}$ matrix of activations (regression outputs), where $\mathbf{Z^{[1]}} = \mathbf{X}\mathbf{W^{[1]}}+b^{[1]}$
-- $\mathbf{A^{[1]}}$: also a $m\times n^{[1]}$ matrix of $L^{[1]}$ outputs after applying the activation function $g^{[1]}$, $\mathbf{A^{[1]}} = g^{[1]}(\mathbf{Z^{[1]}})$
-- $\mathbf{W^{[2]}}$: a $m$-dimensional column vector, since there is only a single node in the output layer
-- $b^{[2]}$: a scalar bias for the output layer.
-- $\mathbf{Z^{[2]}}$: a $m$-dimensional column vector of output layer activations, $\mathbf{Z^{[2]}} = \mathbf{A^{[2]}}\mathbf{W^{[2]}}+b^{[2]}$
-- $\mathbf{A^{[2]}} = \hat{y}$: also a $m$-dimensional column vector of model outputs after applying the activation function $g^{[2]}$, $\mathbf{A^{[2]}} = g^{[2]}(\mathbf{Z^{[2]}})$
+-   $\mathbf{X}$: a $m\times j$ matrix of $j$ features/variables per $m$ examples/observations
+-   $\mathbf{W^{[1]}}$: a $n^{[1]}\times j$ matrix, where $n^{[1]}$ is the number of nodes in the 1^st^ layer ($L^{[1]}$)
+-   $b^{[1]}$: a $n^{[1]}$-dimensional column vector of biases/intercepts of $L^{[1]}$
+-   a $\mathbf{Z^{[1]}}$: a $m\times n^{[1]}$ matrix of activations (regression outputs), where $\mathbf{Z^{[1]}} = \mathbf{X}\mathbf{W^{[1]}}+b^{[1]}$
+-   $\mathbf{A^{[1]}}$: also a $m\times n^{[1]}$ matrix of $L^{[1]}$ outputs after applying the activation function $g^{[1]}$, $\mathbf{A^{[1]}} = g^{[1]}(\mathbf{Z^{[1]}})$
+-   $\mathbf{W^{[2]}}$: a $m$-dimensional column vector, since there is only a single node in the output layer
+-   $b^{[2]}$: a scalar bias for the output layer.
+-   $\mathbf{Z^{[2]}}$: a $m$-dimensional column vector of output layer activations, $\mathbf{Z^{[2]}} = \mathbf{A^{[2]}}\mathbf{W^{[2]}}+b^{[2]}$
+-   $\mathbf{A^{[2]}} = \hat{y}$: also a $m$-dimensional column vector of model outputs after applying the activation function $g^{[2]}$, $\mathbf{A^{[2]}} = g^{[2]}(\mathbf{Z^{[2]}})$
 
 The above can be generalised for any layer $l$ of a deep NN with $L$ layers ($l=0$ being the input layer) as:
 
-| Parameter |  Shape  |
-|-----------|---------|
-| $\mathbf{Z^{[l]}}, \mathbf{A^{[l]}}$ | $(m, n^{[l]})$ |
-| $\mathbf{W^{[l]}}$ | $(n^{[l-1]}, n^{[l]})$ |
-| $b^{[l]}$ | $(n^{[1]}, 1)$ |
+| Parameter                            | Shape                  |
+|--------------------------------------|------------------------|
+| $\mathbf{Z^{[l]}}, \mathbf{A^{[l]}}$ | $(m, n^{[l]})$         |
+| $\mathbf{W^{[l]}}$                   | $(n^{[l-1]}, n^{[l]})$ |
+| $b^{[l]}$                            | $(n^{[1]}, 1)$         |
 
 Note that $\mathbf{A^{[0]}} = \mathbf{X}$, whereby $n^{[0]}$ is the number of features. There is no $\mathbf{Z^{[0]}}$, $\mathbf{W^{[0]}}$, or $b^{[0]}$.
 
@@ -177,7 +176,6 @@ def forward(data: np.ndarray, params: list[dict], activation_funs: list[str], dr
 
     return A, cache
 ```
-
 
 ```{python}
 def cost(y_hat, y) -> float:
@@ -327,7 +325,6 @@ def dnn_model(
     return {"params": params, "cost": J[0:i], "activation_funs": activation_funs, "yhat": Y_hat, "prediction": Y_pred, "accuracy": acc, "alpha": all_learning_rates[0:i], "dropout_probs": dropout_probs}
 ```
 
-
 ```{python}
 m1 = dnn_model(
     X = X_train,
@@ -342,9 +339,7 @@ m1 = dnn_model(
 )
 ```
 
-
 ## Testing the model
-
 
 ```{python}
 def predict(X, model):
@@ -365,5 +360,4 @@ pred = predict(X_test, m1)
 acc_test = float((np.dot(Y_test.T, pred) + np.dot(1 - Y_test.T, 1 - pred)) / float(Y_test.size) * 100)
 ```
 
-Our simple model correctly classified `r round(py$m1$accuracy, 1)`% of the floor  plans in the training set and `r round(py$acc_test, 1)`% of the floor  plans in the test set.
-
+Our simple model correctly classified `r round(py$m1$accuracy, 1)`% of the floor plans in the training set and `r round(py$acc_test, 1)`% of the floor plans in the test set.

@@ -208,5 +208,54 @@
     "title": "Shallow neural network exercise",
     "section": "Footnotes",
     "text": "Footnotes\n\n\nI am really not sure if the terminology and notation are technically correct. The equations below represent the individual steps for the back propagation simultaneously over all examples. The outputs of the individual steps range from scalar to matrix. Whether or not “derivative” is the appropriate term, I don’t know. I’m just a dumdum ¯\\_(ツ)_/¯↩︎"
+  },
+  {
+    "objectID": "posts/report_july/index.html",
+    "href": "posts/report_july/index.html",
+    "title": "Neufert 4.0 July 23 Progress Report",
+    "section": "",
+    "text": "We are attempting to build a deep neural network that would be able to predict likely characteristics of an apartment based solely on data derived from the geometry of its outline as well as basic variables related to the view from the apartment (e.g. whether or not a highway or railway is visible)."
+  },
+  {
+    "objectID": "posts/report_july/index.html#motivation",
+    "href": "posts/report_july/index.html#motivation",
+    "title": "Neufert 4.0 July 23 Progress Report",
+    "section": "",
+    "text": "We are attempting to build a deep neural network that would be able to predict likely characteristics of an apartment based solely on data derived from the geometry of its outline as well as basic variables related to the view from the apartment (e.g. whether or not a highway or railway is visible)."
+  },
+  {
+    "objectID": "posts/report_july/index.html#data",
+    "href": "posts/report_july/index.html#data",
+    "title": "Neufert 4.0 July 23 Progress Report",
+    "section": "Data",
+    "text": "Data\nWe made use of the Neufert 4.0 data based on the Swiss dwellings dataset. We reviewed the original data, removing duplicates, cleaning the data of errors, and adding apartment and floor outline geometries. The resulting dataset contained 14,607 entries (one per apartment). Based on the data, we calculated 178 features that encoded geometrical and view properties of the individual apartments. These features were used as input variables for the neural network models.\nAs output variables, we chose a number of continuous and categorical variables:\n\n\n\n\nTable 1: Summary table of continuous outcome variables.\n\n\nVariable\nMin\nQ1\nMedian\nMean\nQ3\nMax\nMissing\n\n\n\n\nCorridor area ratio\n0.00\n0.08\n0.11\n0.11\n0.14\n0.37\n0\n\n\nLargest room sunlight\n0.00\n0.40\n0.65\n0.72\n0.95\n3.93\n0\n\n\nLargest room noise\n0.00\n33.89\n41.90\n40.86\n49.62\n71.71\n0\n\n\nLargest room kitchen distance\n0.25\n0.25\n0.75\n1.42\n2.00\n142.25\n33\n\n\nKitchen sunlight\n0.00\n0.80\n1.62\n1.81\n2.56\n9.55\n0\n\n\n\n\n\n\n\n\n\n\n\n\nTable 2: Summary table of binary outcome variables.\n\n\nVariable\nNo\nYes\n\n\n\n\nHas loggia\n9704\n4903\n\n\nBathroom has window\n3630\n10977\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 1: Distribution of the `number_of_rooms variable.\n\n\n\n\nThe dataset was split into a training set (N = 8,744), development set (N = 2,915), and test set (N = 2,915). The development set was used for model evaluation during the hyperparameter tuning stage of the model development."
+  },
+  {
+    "objectID": "posts/report_july/index.html#general-neural-network-architecture",
+    "href": "posts/report_july/index.html#general-neural-network-architecture",
+    "title": "Neufert 4.0 July 23 Progress Report",
+    "section": "General neural network architecture",
+    "text": "General neural network architecture\nThe chosen neural network consisted of blocs of fully connected layers with L2 regularisation, followed by a dropout layer. For every but the first bloc, we also included a skip connection from the previous bloc. The number of units per layer, the value of regularisation parameter (\\(\\lambda\\)), the dropout proportion, as well as the number of blocs in the network were treated as variable hyperparameters. Finally, a single-unit layer for each of the eight outcome variables was added in parallel to the end of the last bloc."
+  },
+  {
+    "objectID": "posts/report_july/index.html#hyperparameter-search",
+    "href": "posts/report_july/index.html#hyperparameter-search",
+    "title": "Neufert 4.0 July 23 Progress Report",
+    "section": "Hyperparameter search",
+    "text": "Hyperparameter search\nWe performed a grid search of the hyperparameter space defined by the following values:\n\nDropout: [0.3, 0.4, 0.5]\nL2 regularisation parameter: [0.0001, 0.001, 0.01]\nNo. of blocs: 1-7\nNumber of units: [64, 128, 256]\n\nThe performance of the model was assessed according to the loss calculated on the validation set.\nAll models were trained using the Adam optimiser with a learning rate of 0.0001 for a maximum of 500 epochs. An early stopping rule was implemented with a patience of 20 epochs and a tolerance of 0.001, meaning that if the validation loss didn’t improve for 20 epochs by more than 0.001, the training of the model was interrupted, reverting to the best weights to date."
+  },
+  {
+    "objectID": "posts/report_july/index.html#best-model-architecture",
+    "href": "posts/report_july/index.html#best-model-architecture",
+    "title": "Neufert 4.0 July 23 Progress Report",
+    "section": "Best model architecture",
+    "text": "Best model architecture\nBased on the hyperparameter tuning step described above, we settled on a model with the following characteristics:\n\nDropout: 0.3\nL2 regularisation parameter: 0.0001\nNo. of blocs: 5\nNumber of units: 256\n\nA graphical representation of the model can be found in Figure 2 below.\n\n\n\n\nFigure 2: Schema of the best-performing model"
+  },
+  {
+    "objectID": "posts/report_july/index.html#model-performance",
+    "href": "posts/report_july/index.html#model-performance",
+    "title": "Neufert 4.0 July 23 Progress Report",
+    "section": "Model performance",
+    "text": "Model performance\n\nDoes the apartment have a loggia?\nIn the table below, sensitivity refers to the ability of a test to detect and existing effect. If you have COVID, and take a PCR test, how likely is it to come back positive? Specificity on the other hand is the test’s ability to accurately reject negative cases. If you do not have COVID, what is the probability that your PCR test comes back negative?\n\n\n\n\nTable 3:  Performance of the model with respect to the has_loggia\nvariable. \n \n\n\n\nPrediction\n\n  \n     \n     \n    Yes \n    No \n    Total \n  \n \n\n  \n     \n    Yes \n    700 \n    304 \n    1004 \n  \n  \n    Truth \n    No \n    173 \n    1738 \n    1911 \n  \n  \n     \n    Total \n    873 \n    2042 \n    2915 \n  \n\n\n\n Sensitivity: 69.7%\n\n Specificity: 90.9%\n\n Accuracy (not appropriate for imbalanced data): 83.6%\n\n\n\n\n\n\n\n\nDoes the bathroom have a window?\n\n\n\n\nTable 4:  Performance of the model with respect to the\nbathroom_has_window variable. \n \n\n\n\nPrediction\n\n  \n     \n     \n    Yes \n    No \n    Total \n  \n \n\n  \n     \n    Yes \n    1996 \n    169 \n    2165 \n  \n  \n    Truth \n    No \n    342 \n    408 \n    750 \n  \n  \n     \n    Total \n    2338 \n    577 \n    2915 \n  \n\n\n\n Sensitivity: 92.2%\n\n Specificity: 54.4%\n\n Accuracy (not appropriate for imbalanced data): 82.5%\n\n\n\n\n\n\n\n\nNumber of rooms\nGiven the architecture of the network, the model predicted number of rooms as a continuous real number variable. For this reason, we rounded the prediction to whole number. Because the prediction domain was unconstrained, the model could predict a number of rooms smaller than one (this happened on two occasions) or larger than can reasonably be expected (on one occasion, it predicted 13 rooms).\nThese erroneous predictions aside, the model performance was as shown below:\n\n\n\n\n\nFigure 3: Confusion matrix of the number of rooms variable.\n\n\n\n\nThe model correctly predicted the number of rooms for 75.5% of the cases, with only 21 (0.72%) of predictions falling outside of the truth±1 range.\n\n\nContinuous variables\nThe sections below provide a summary of the model performance on continuous variables. The scatter plots show the relationship between the model prediction and the ground truth based on the test set. Included in the plot is a OLS line of best fit along with an 80% prediction interval.\nThe R2 statistic can be interpreted as the proportion of variance in the outcome variable accounted for by the predictor. The b coefficients are the intercept and slope of the line of best fit and should ideally have the value of 0 and 1, respectively.\nThe left plot of the pair includes all data except for the outliers listed below. The plot on the right hand side also excludes observations where the true value is zero.\n\n\nCirculation efficiency\n\n80% prediction interval = ±0.03\nn(x=0) = 139\n\n\nKitchen-living room distance (m)\n\n80% prediction interval = ±0.93\nn(x=0) = 0\nOutliers\n\n\n\n\n\n\n\nPrediction\n\n\nTruth\n\n\n\n\n\n\n912\n\n\n38.82299\n\n\n0.25\n\n\n\n\n957\n\n\n35.64644\n\n\n2.50\n\n\n\n\n\n\n\nLiving room sunlight (klx)\n\n80% prediction interval = ±0.27\nn(x=0) = 2\nOutliers\n\n\n\n\n\n\n\nPrediction\n\n\nTruth\n\n\n\n\n\n\n957\n\n\n-7.644796\n\n\n1.055584\n\n\n\n\n\n\n\nLiving room noise (dB)\n\n80% prediction interval = ±7.81\nn(x=0) = 84\nOutliers\n\n\n\n\n\n\n\nPrediction\n\n\nTruth\n\n\n\n\n\n\n957\n\n\n133.8368\n\n\n34.70842\n\n\n\n\n\n\n\nKitchen sunlight (klx)\n\n80% prediction interval = ±0.89\nn(x=0) = 53\nOutliers\n\n\n\n\n\n\n\nPrediction\n\n\nTruth\n\n\n\n\n\n\n957\n\n\n19.02683\n\n\n1.564121"
   }
 ]

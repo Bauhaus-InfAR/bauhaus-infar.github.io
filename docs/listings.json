@@ -6,6 +6,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/report_july/index.html",
       "/posts/quarto_workshop/index.html",
       "/posts/shallow_nn/index.html",
       "/posts/data_cleaning/index.html"
